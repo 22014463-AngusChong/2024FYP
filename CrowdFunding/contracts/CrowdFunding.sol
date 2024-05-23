@@ -8,7 +8,7 @@ contract CrowdFunding {
         string description;
         uint256 target;
         uint256 deadline;
-        uint256 amountCollected;
+        uint256 collected;
         string image;
         address[] donators;
         uint256[] donations;
@@ -16,22 +16,22 @@ contract CrowdFunding {
 
     mapping(uint256 => Campaign) public campaigns;
 
-    uint256 public numberOfCampaigns = 0;
+    uint256 public noOfCampaigns = 0;
 
-    function creatCampaign(address _owner, string memory _title, string memory _description,
+    function createCampaign(address _owner, string memory _title, string memory _description,
     uint256 _target, uint256 _deadline, string memory _image) public returns (uint256) {
-        Campaign storage campaign = campaigns[numberOfCampaigns];
+        Campaign storage campaign = campaigns[noOfCampaigns];
         require(campaign.deadline < block.timestamp, "The deadline should be a date in the future.");
         campaign.owner = _owner;
         campaign.title = _title;
         campaign.description = _description;
         campaign.target = _target;
         campaign.deadline = _deadline;
-        campaign.amountCollected = 0;
+        campaign.collected = 0;
         campaign.image = _image;
 
-        numberOfCampaigns++;
-        return numberOfCampaigns - 1;
+        noOfCampaigns++;
+        return noOfCampaigns - 1;
 
     }
 
@@ -42,7 +42,7 @@ contract CrowdFunding {
         campaign.donations.push(amount);
         (bool sent,) = payable(campaign.owner).call{value: amount}("");
         if(sent){
-            campaign.amountCollected = campaign.amountCollected + amount;
+            campaign.collected = campaign.collected + amount;
         }
     }
 
@@ -51,9 +51,9 @@ contract CrowdFunding {
     }
 
     function getCampaigns() public view returns (Campaign[] memory) {
-        Campaign[] memory allCampaigns = new Campaign[](numberOfCampaigns);
+        Campaign[] memory allCampaigns = new Campaign[](noOfCampaigns);
 
-        for(uint i = 0; i < numberOfCampaigns; i++) {
+        for(uint i = 0; i < noOfCampaigns; i++) {
             Campaign storage item = campaigns[i];
             allCampaigns[i] = item;
         }
