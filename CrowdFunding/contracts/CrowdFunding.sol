@@ -1,64 +1,119 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.9;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.18;
 
 contract CrowdFunding {
-    struct Campaign {
-        address owner;
-        string title;
-        string description;
-        uint256 target;
-        uint256 deadline;
-        uint256 collected;
-        string image;
-        address[] donators;
-        uint256[] donations;
+    enum FundingStatus {Ended, Ongoing}
+    
+    string webName;
+    uint fundCount;
+    FundingStatus currentFundStatus;
+    address public owner;
+    uint public fundsEnded;
+    uint public fundsOngoing;
+
+    // Constructor code is only run when the contract is created
+    constructor() {
+        fundCount=0;
+        currentFundStatus = FundingStatus.Ongoing;
+        webName = "CrowdFunding";
+        owner = msg.sender;
     }
 
-    mapping(uint256 => Campaign) public campaigns;
-
-    uint256 public noOfCampaigns = 0;
-
-    function createCampaign(address _owner, string memory _title, string memory _description,
-    uint256 _target, uint256 _deadline, string memory _image) public returns (uint256) {
-        Campaign storage campaign = campaigns[noOfCampaigns];
-        require(campaign.deadline < block.timestamp, "The deadline should be a date in the future.");
-        campaign.owner = _owner;
-        campaign.title = _title;
-        campaign.description = _description;
-        campaign.target = _target;
-        campaign.deadline = _deadline;
-        campaign.collected = 0;
-        campaign.image = _image;
-
-        noOfCampaigns++;
-        return noOfCampaigns - 1;
-
+    //function that sets the reading status to “Sold”.  
+    function setFundSold() public {
+        currentFundStatus = FundingStatus.Ended;
+    }
+        
+    function getFundName() public view returns(string memory){
+        return webName;
     }
 
-    function donateToCampaign(uint256 _id) public payable {
-        uint256 amount = msg.value;
-        Campaign storage campaign = campaigns[_id];
-        campaign.donators.push(msg.sender);
-        campaign.donations.push(amount);
-        (bool sent,) = payable(campaign.owner).call{value: amount}("");
-        if(sent){
-            campaign.collected = campaign.collected + amount;
-        }
+    //a function to retrieve the current availability of the fund.
+    function getFundStatus() public view returns(FundingStatus) {
+        return currentFundStatus;
+    }
+    // Declaring a structure fundDetails
+    struct FundDetails {
+        uint fundId;
+        string name;
+        string picName;
+        uint price;
+        address payable ownerId;
+        FundingStatus status;
+   }
+
+    // Declaring a structure ownerDetails
+   struct  ownerDetails {
+        address ownerId;
+        string firstName;
+        string lastName;
+        string mobileNo;
+        string email;
+    }    
+
+    //FundDetails[] public listOfFunds;
+    mapping (uint => FundDetails) public listOfFunds;
+
+    //create the event to add Fund
+    event FundCreated(
+        uint fundId,
+        string name,
+        string picName,
+        uint price,
+        address payable ownerId,
+        FundingStatus status
+    );
+
+    //Write a function addFund with the relevant function parameters
+    function addFund( string memory _name, string memory _picName,
+        uint _price) public {
+        incrementFundCount();
+        listOfFunds[fundCount] = FundDetails(fundCount, _name, _picName, _price, payable(msg.sender), FundingStatus.Ongoing);
+        //emit the event to addFund 
+        emit FundCreated(fundCount, _name, _picName, _price, payable(msg.sender), FundingStatus.Ongoing);
     }
 
-    function getDonators(uint256 _id) view public returns (address[] memory, uint256[] memory){
-        return(campaigns[_id].donators, campaigns[_id].donations);
+    function incrementFundCount() internal {
+        fundCount += 1;
+    }
+    //Write a function getNoOfFunds to obtain the fundCount
+    function getNoOfFunds() public view returns (uint) {
+        return fundCount;
     }
 
-    function getCampaigns() public view returns (Campaign[] memory) {
-        Campaign[] memory allCampaigns = new Campaign[](noOfCampaigns);
+    //create the event to purchase the Fund
+    event FundPurchased(
+        uint id,
+        string name,
+        uint price,
+        address payable owner,
+        FundingStatus status
+    );
 
-        for(uint i = 0; i < noOfCampaigns; i++) {
-            Campaign storage item = campaigns[i];
-            allCampaigns[i] = item;
-        }
-        return allCampaigns;
+    //add a function to purchase fund with the fund id
+    function purchaseFund(uint _id) public payable {
+        // Fetch the product
+        FundDetails memory fundInfo = listOfFunds[_id];
+        // Fetch the owner
+        address payable seller = fundInfo.ownerId;
+        // Make sure the product has a valid id
+        require(fundInfo.fundId > 0 && fundInfo.fundId <= fundCount);
+        // Require that there is enough Ether in the transaction
+        require(msg.value >= fundInfo.price);
+        // Require that the product has not been purchased already
+        require(fundInfo.status == FundingStatus.Ongoing);
+        // Require that the buyer is not the seller
+        require(seller != msg.sender);
+        // Transfer ownership to the buyer
+        fundInfo.ownerId = payable(msg.sender);
+        // Mark as purchased
+        fundInfo.status = FundingStatus.Ended;
+        // Update the product
+        listOfFunds[_id] = fundInfo;
+        // Pay the seller by sending them Ether
+        payable(seller).transfer(msg.value);
+        // Trigger an event
+        emit FundPurchased(fundCount, fundInfo.name, fundInfo.price, payable(msg.sender), FundingStatus.Ended);
     }
-
 
 }

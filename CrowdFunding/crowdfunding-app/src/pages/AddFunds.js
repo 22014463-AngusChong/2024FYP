@@ -1,91 +1,56 @@
 import React, { Component } from 'react';
-class AddPet extends Component {
+class AddFund extends Component {
     render() {
         return (
         <div id="content">
-            <p> Total no of pets {this.props.petCount} </p>
-            <h1>Add Pet </h1>
+            <p> Total no of funds {this.props.fundCount} </p>
+            <h1>Add Fund </h1>
             <form onSubmit={(event) => {
                 event.preventDefault()
-                const name = this.petName.value
-                const picName = this.petPic.value
-                const age = this.petAge.value
-                const breed = this.petBreed.value
-                const location = this.petLocation.value                   
-                const price = window.web3.utils.toWei(this.petPrice.value.toString(), 'ether')
-                this.props.addPet(name, picName, age, breed, location, price)
+                const name = this.fundName.value
+                const picName = this.fundPic.value                  
+                const price = window.web3.utils.toWei(this.fundPrice.value.toString(), 'ether')
+                this.props.addFund(name, picName, price)
             }}> {/*end of form */}
                 <div className="form-group mr-sm-2">
                     <input
-                        id="petName"
+                        id="fundName"
                         type="text"
-                        ref={(input) => { this.petName = input }}
+                        ref={(input) => { this.fundName = input }}
                         className="form-control"
-                        placeholder="Pet Name"
+                        placeholder="Fund Name"
                         required />
                 </div>
                 <br />
                 <div className="form-group mr-sm-2">
                     <input
-                        id="petPic"
+                        id="fundPic"
                         type="text"
-                        ref={(input) => { this.petPic = input }}
+                        ref={(input) => { this.fundPic = input }}
                         className="form-control"
-                        placeholder="Pet Picture"
+                        placeholder="Fund Picture"
                         required />
                 </div>
                 <br />
                 <br />
                 <div className="form-group mr-sm-2">
                     <input
-                        id="petAge"
+                        id="fundPrice"
                         type="text"
-                        ref={(input) => { this.petAge = input }}
+                        ref={(input) => { this.fundPrice = input }}
                         className="form-control"
-                        placeholder="Pet Age"
-                        required />
-                </div>
-                <br />
-                <div className="form-group mr-sm-2">
-                    <input
-                        id="petBreed"
-                        type="text"
-                        ref={(input) => { this.petBreed = input }}
-                        className="form-control"
-                        placeholder="Pet Breed"
-                        required />
-                </div>
-                <br />
-                <div className="form-group mr-sm-2">
-                    <input
-                        id="petLocation"
-                        type="text"
-                        ref={(input) => { this.petLocation = input }}
-                        className="form-control"
-                        placeholder="Pet Location"
-                        required />
-                </div>
-                <br />
-                
-                <br />
-                <div className="form-group mr-sm-2">
-                    <input
-                        id="petPrice"
-                        type="text"
-                        ref={(input) => { this.petPrice = input }}
-                        className="form-control"
-                        placeholder="Pet Price"
+                        placeholder="Fund Price"
                         required />
                 </div>
                 
                 <br />
                 <br />
-                <button type="submit" className="btn btn-primary">Add Pet</button>
+                <button type="submit" className="btn btn-primary">Add Fund</button>
             </form>
         </div>
         )
     }
 }
 
-export default AddPet;
+export default AddFund;
 
