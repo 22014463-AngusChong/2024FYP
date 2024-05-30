@@ -5,15 +5,24 @@ import Web3 from 'web3';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AboutUs from "./pages/AboutUs";
 import Layout from "./pages/Layout";
-import AddFund from "./pages/AddFunds";
-import CrowdFunding from './build/CrowdFunding.json'; 
-//import FundInfo from './build/FundInfo.json';
+import AddPet from "./pages/AddFunds";
+import PetContract from './build/PetContract.json';
+//import PetInfo from './build/PetInfo.json';
 import Main from './Main'
 
 class App extends Component {
   async componentWillMount() {
     await this.loadWeb3()
     await this.loadBlockchainData()    
+  }
+
+  async purchasePet(id, price) {
+    const output = await this.state.contractInfo.methods.purchasePet(id).send({ from: this.state.account, value: price })
+    .once('receipt', (receipt) => {
+      console.log(receipt);
+    })    
+    console.log(output)
+    window.location.assign("/")
   }
 
   async loadWeb3() {
@@ -45,34 +54,34 @@ class App extends Component {
     const networkId = await web3.eth.net.getId()
     console.log(networkId)
     //reads the network data migrated into the gananche
-    const networkData = CrowdFunding.networks[networkId]
+    const networkData = PetContract.networks[networkId]
     if (networkData) {
-        //reads the abi data from CrowdFundingContract 
-      const contractInfo = new web3.eth.Contract(CrowdFunding.abi, networkData.address)
+        //reads the abi data from Petcontract 
+      const contractInfo = new web3.eth.Contract(PetContract.abi, networkData.address)
       this.setState({ contractInfo })
       console.log(contractInfo)
-      // calls the function getNoOfFunds from the fund contract deployed
-      const fundCount = await contractInfo.methods.getNoOfFunds().call()
-      console.log(fundCount.toString());
-      //assigns the fundCount variable declared in the constructor
-      this.setState({ fundCount });
-      // reading the fundInfo.json file and assign the data to listOfFunds array
-      /*for (var i = 1; i <= FundInfo.length; i++) {        
-        this.state.listOfFunds.push(FundInfo[i]);
-        console.log(this.state.listOfFunds);
+      // calls the function getNoOfPets from the pet contract deployed
+      const petCount = await contractInfo.methods.getNoOfPets().call()
+      console.log(petCount.toString());
+      //assigns the petCount variable declared in the constructor
+      this.setState({ petCount });
+      // reading the petInfo.json file and assign the data to listOfPets array
+      /*for (var i = 1; i <= PetInfo.length; i++) {        
+        this.state.listOfPets.push(PetInfo[i]);
+        console.log(this.state.listOfPets);
       }*/
       web3.eth.getBalance(accounts[0]).then(result => console.log(result));
-      // Load products       // reads fund information from the smart contract
-      for (var i = 1; i <= fundCount; i++) {
-        const fundInfo = await contractInfo.methods.listOfFunds(i).call()
+      // Load products       // reads pet information from the smart contract
+      for (var i = 1; i <= petCount; i++) {
+        const petInfo = await contractInfo.methods.listOfPets(i).call()
         this.setState({
-          listOfFunds: [...this.state.listOfFunds, fundInfo]
+          listOfPets: [...this.state.listOfPets, petInfo]
         })
-        console.log(this.state.listOfFunds);
+        console.log(this.state.listOfPets);
       }
       this.setState({ loading: false })
     } else {
-      window.alert('Fund contract not deployed to detected network.')
+      window.alert('Pet contract not deployed to detected network.')
     }
   }
 
@@ -80,36 +89,27 @@ class App extends Component {
     super(props)
     this.state = {
       account: '',
-      fundCount: 0,
+      petCount: 0,
       loading: true,   
-      listOfFunds: [],        
+      listOfPets: [],        
     }
-    this.addFund = this.addFund.bind(this)
-    this.purchaseFund = this.purchaseFund.bind(this)
+    this.addPet = this.addPet.bind(this)
+    this.purchasePet = this.purchasePet.bind(this)
   }
 
-  async addFund(name, picName, age, breed, location, price) {      
+  async addPet(name, picName, age, breed, location, price) {      
       const balance = window.web3.eth.getBalance(this.state.account);
       console.log(balance)
-      const count = await this.state.contractInfo.methods.getNoOfFunds().call()
+      const count = await this.state.contractInfo.methods.getNoOfPets().call()
       console.log(count.toString());
-      const output = await this.state.contractInfo.methods.addFund(name, picName, 
+      const output = await this.state.contractInfo.methods.addPet(name, picName, 
                 age, breed, location, price).estimateGas({from: this.state.account});
-      const data = await this.state.contractInfo.methods.addFund(name, picName, 
+      const data = await this.state.contractInfo.methods.addPet(name, picName, 
               age, breed, location, price).send({from: this.state.account, gas:"1000000"})
       console.log(output)
       console.log(data)
       window.open("/");
   }
-  async purchaseFund(id, price) {
-    const output = await this.state.contractInfo.methods.purchaseFund(id).send({ from: this.state.account, value: price })
-    .once('receipt', (receipt) => {
-      console.log(receipt);
-    })    
-    console.log(output)
-    window.location.assign("/")
-  }
-
    
   render() {
     return (
@@ -126,15 +126,15 @@ class App extends Component {
                 <Route path="AboutUs" element={<AboutUs />} />
 
                 <Route index element={<Main
-                    fundCount={this.state.fundCount}
+                    petCount={this.state.petCount}
                     account={this.state.account}
-                    listOfFunds={this.state.listOfFunds}
-                    purchaseFund = {this.purchaseFund} />} />
+                    listOfPets={this.state.listOfPets}
+                    purchasePet = {this.purchasePet} />} />
 
-                <Route path="AddFund" element={<AddFund
-                    fundCount={this.state.fundCount}
+                <Route path="AddPet" element={<AddPet
+                    petCount={this.state.petCount}
                     account={this.state.account}
-                    addFund={this.addFund} />} />
+                    addPet={this.addPet} />} />
               </Routes>
             </BrowserRouter>
         }       
