@@ -7,7 +7,6 @@ import AboutUs from "./pages/AboutUs";
 import Layout from "./pages/Layout";
 import AddFund from "./pages/AddFunds";
 import CrowdFunding from './build/CrowdFunding.json';
-//import FundInfo from './build/FundInfo.json';
 import Main from './Main'
 
 class App extends Component {
@@ -42,46 +41,31 @@ class App extends Component {
 
 
   async loadBlockchainData() {
-    const web3 = window.web3
-    // Load account from the network /blockchain/ganache
-    //loads 10 accounts from ganache 
-    const accounts = await web3.eth.getAccounts()
-    console.log(accounts[0]);
-    // set the state of the variable account declared in constructor.
-    this.setState({ account: accounts[0] })
-    // gets the network id from the web3 connection to ganache
-    //ganache 5777
-    const networkId = await web3.eth.net.getId()
-    console.log(networkId)
-    //reads the network data migrated into the gananche
-    const networkData = CrowdFunding.networks[networkId]
+    const web3 = window.web3;
+    const accounts = await web3.eth.getAccounts();
+    this.setState({ account: accounts[0] });
+
+    const networkId = await web3.eth.net.getId();
+    const networkData = CrowdFunding.networks[networkId];
+    
     if (networkData) {
-        //reads the abi data from Fundcontract 
-      const contractInfo = new web3.eth.Contract(CrowdFunding.abi, networkData.address)
-      this.setState({ contractInfo })
-      console.log(contractInfo)
-      // calls the function getNoOfFunds from the fund contract deployed
-      const fundCount = await contractInfo.methods.getNoOfFunds().call()
-      console.log(fundCount.toString());
-      //assigns the fundCount variable declared in the constructor
+      const contractInfo = new web3.eth.Contract(CrowdFunding.abi, networkData.address);
+      this.setState({ contractInfo });
+
+      const fundCount = await contractInfo.methods.getNoOfFunds().call();
       this.setState({ fundCount });
-      // reading the fundInfo.json file and assign the data to listOfFunds array
-      /*for (var i = 1; i <= FundInfo.length; i++) {        
-        this.state.listOfFunds.push(FundInfo[i]);
-        console.log(this.state.listOfFunds);
-      }*/
-      web3.eth.getBalance(accounts[0]).then(result => console.log(result));
-      // Load products       // reads fund information from the smart contract
+      this.setState({ loading: false });
+
       for (var i = 1; i <= fundCount; i++) {
-        const fundInfo = await contractInfo.methods.listOfFunds(i).call()
+        const artInfo = await contractInfo.methods.listOfFunds(i).call();
         this.setState({
-          listOfFunds: [...this.state.listOfFunds, fundInfo]
-        })
+          listOfFunds: [...this.state.listOfFunds, artInfo],
+        });
         console.log(this.state.listOfFunds);
       }
-      this.setState({ loading: false })
+
     } else {
-      window.alert('Fund contract not deployed to detected network.')
+      window.alert('CrowdFunding contract not deployed to detected network.');
     }
   }
 
