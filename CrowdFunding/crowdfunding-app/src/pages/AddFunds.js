@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
-class AddFund extends Component {
+class AddFunds extends Component {
     render() {
         return (
         <div id="content">
-            <p> Total no of funds {this.props.fundCount} </p>
+            <p> Total no of funds {this.props.fundsCount} </p>
             <h1>Add Fund </h1>
             <form onSubmit={(event) => {
                 event.preventDefault()
-                const name = this.fundName.value
-                const picName = this.fundPic.value                  
-                const price = window.web3.utils.toWei(this.fundPrice.value.toString(), 'ether')
+                const name = this.fundsName.value
+                const picName = this.fundsPic.value                  
+                const price = window.web3.utils.toWei(this.fundsPrice.value.toString(), 'ether')
                 this.props.addFund(name, picName, price)
             }}> {/*end of form */}
                 <div className="form-group mr-sm-2">
                     <input
-                        id="fundName"
+                        id="fundsName"
                         type="text"
-                        ref={(input) => { this.fundName = input }}
+                        ref={(input) => { this.fundsName = input }}
                         className="form-control"
                         placeholder="Fund Name"
                         required />
@@ -24,9 +24,9 @@ class AddFund extends Component {
                 <br />
                 <div className="form-group mr-sm-2">
                     <input
-                        id="fundPic"
+                        id="fundsPic"
                         type="text"
-                        ref={(input) => { this.fundPic = input }}
+                        ref={(input) => { this.fundsPic = input }}
                         className="form-control"
                         placeholder="Fund Picture"
                         required />
@@ -35,9 +35,9 @@ class AddFund extends Component {
                 <br />
                 <div className="form-group mr-sm-2">
                     <input
-                        id="fundPrice"
+                        id="fundsPrice"
                         type="text"
-                        ref={(input) => { this.fundPrice = input }}
+                        ref={(input) => { this.fundsPrice = input }}
                         className="form-control"
                         placeholder="Fund Price"
                         required />
@@ -52,5 +52,5 @@ class AddFund extends Component {
     }
 }
 
-export default AddFund;
+export default AddFunds;
 

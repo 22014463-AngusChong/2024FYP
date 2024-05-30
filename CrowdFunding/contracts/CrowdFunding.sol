@@ -5,7 +5,7 @@ contract CrowdFunding {
     enum FundingStatus {Ended, Ongoing}
     
     string webName;
-    uint fundCount;
+    uint fundsCount;
     FundingStatus currentFundStatus;
     address public owner;
     uint public fundsEnded;
@@ -13,7 +13,7 @@ contract CrowdFunding {
 
     // Constructor code is only run when the contract is created
     constructor() {
-        fundCount=0;
+        fundsCount=0;
         currentFundStatus = FundingStatus.Ongoing;
         webName = "CrowdFunding";
         owner = msg.sender;
@@ -68,17 +68,17 @@ contract CrowdFunding {
     function addFund( string memory _name, string memory _picName,
         uint _price) public {
         incrementFundCount();
-        listOfFunds[fundCount] = FundDetails(fundCount, _name, _picName, _price, payable(msg.sender), FundingStatus.Ongoing);
+        listOfFunds[fundsCount] = FundDetails(fundsCount, _name, _picName, _price, payable(msg.sender), FundingStatus.Ongoing);
         //emit the event to addFund 
-        emit FundCreated(fundCount, _name, _picName, _price, payable(msg.sender), FundingStatus.Ongoing);
+        emit FundCreated(fundsCount, _name, _picName, _price, payable(msg.sender), FundingStatus.Ongoing);
     }
 
     function incrementFundCount() internal {
-        fundCount += 1;
+        fundsCount += 1;
     }
-    //Write a function getNoOfFunds to obtain the fundCount
+    //Write a function getNoOfFunds to obtain the fundsCount
     function getNoOfFunds() public view returns (uint) {
-        return fundCount;
+        return fundsCount;
     }
 
     //create the event to purchase the Fund
@@ -93,27 +93,27 @@ contract CrowdFunding {
     //add a function to purchase fund with the fund id
     function purchaseFund(uint _id) public payable {
         // Fetch the product
-        FundDetails memory fundInfo = listOfFunds[_id];
+        FundDetails memory fundsInfo = listOfFunds[_id];
         // Fetch the owner
-        address payable seller = fundInfo.ownerId;
+        address payable seller = fundsInfo.ownerId;
         // Make sure the product has a valid id
-        require(fundInfo.fundId > 0 && fundInfo.fundId <= fundCount);
+        require(fundsInfo.fundId > 0 && fundsInfo.fundId <= fundsCount);
         // Require that there is enough Ether in the transaction
-        require(msg.value >= fundInfo.price);
+        require(msg.value >= fundsInfo.price);
         // Require that the product has not been purchased already
-        require(fundInfo.status == FundingStatus.Ongoing);
+        require(fundsInfo.status == FundingStatus.Ongoing);
         // Require that the buyer is not the seller
         require(seller != msg.sender);
         // Transfer ownership to the buyer
-        fundInfo.ownerId = payable(msg.sender);
+        fundsInfo.ownerId = payable(msg.sender);
         // Mark as purchased
-        fundInfo.status = FundingStatus.Ended;
+        fundsInfo.status = FundingStatus.Ended;
         // Update the product
-        listOfFunds[_id] = fundInfo;
+        listOfFunds[_id] = fundsInfo;
         // Pay the seller by sending them Ether
         payable(seller).transfer(msg.value);
         // Trigger an event
-        emit FundPurchased(fundCount, fundInfo.name, fundInfo.price, payable(msg.sender), FundingStatus.Ended);
+        emit FundPurchased(fundsCount, fundsInfo.name, fundsInfo.price, payable(msg.sender), FundingStatus.Ended);
     }
 
 }

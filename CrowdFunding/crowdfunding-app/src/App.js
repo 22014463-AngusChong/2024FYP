@@ -52,11 +52,11 @@ class App extends Component {
       const contractInfo = new web3.eth.Contract(CrowdFunding.abi, networkData.address);
       this.setState({ contractInfo });
 
-      const fundCount = await contractInfo.methods.getNoOfFunds().call();
-      this.setState({ fundCount });
+      const fundsCount = await contractInfo.methods.getNoOfFunds().call();
+      this.setState({ fundsCount });
       this.setState({ loading: false });
 
-      for (var i = 1; i <= fundCount; i++) {
+      for (var i = 1; i <= fundsCount; i++) {
         const artInfo = await contractInfo.methods.listOfFunds(i).call();
         this.setState({
           listOfFunds: [...this.state.listOfFunds, artInfo],
@@ -73,22 +73,22 @@ class App extends Component {
     super(props)
     this.state = {
       account: '',
-      fundCount: 0,
+      fundsCount: 0,
       loading: true,   
       listOfFunds: [],        
     }
-    this.addFund = this.addFund.bind(this)
+    this.addFunds = this.addFunds.bind(this)
     this.purchaseFund = this.purchaseFund.bind(this)
   }
 
-  async addFund(name, picName, age, breed, location, price) {      
+  async addFunds(name, picName, age, breed, location, price) {      
       const balance = window.web3.eth.getBalance(this.state.account);
       console.log(balance)
       const count = await this.state.contractInfo.methods.getNoOfFunds().call()
       console.log(count.toString());
-      const output = await this.state.contractInfo.methods.addFund(name, picName, 
+      const output = await this.state.contractInfo.methods.addFunds(name, picName, 
                 age, breed, location, price).estimateGas({from: this.state.account});
-      const data = await this.state.contractInfo.methods.addFund(name, picName, 
+      const data = await this.state.contractInfo.methods.addFunds(name, picName, 
               age, breed, location, price).send({from: this.state.account, gas:"1000000"})
       console.log(output)
       console.log(data)
@@ -110,15 +110,15 @@ class App extends Component {
                 <Route path="AboutUs" element={<AboutUs />} />
 
                 <Route index element={<Main
-                    fundCount={this.state.fundCount}
+                    fundsCount={this.state.fundsCount}
                     account={this.state.account}
                     listOfFunds={this.state.listOfFunds}
                     purchaseFund = {this.purchaseFund} />} />
 
-                <Route path="AddFund" element={<AddFund
-                    fundCount={this.state.fundCount}
+                <Route path="AddFunds" element={<AddFund
+                    fundsCount={this.state.fundsCount}
                     account={this.state.account}
-                    addFund={this.addFund} />} />
+                    addFunds={this.addFunds} />} />
               </Routes>
             </BrowserRouter>
         }       
