@@ -10,7 +10,7 @@ class AddFunds extends Component {
                 const name = this.fundsName.value
                 const picName = this.fundsPic.value                  
                 const price = window.web3.utils.toWei(this.fundsPrice.value.toString(), 'ether')
-                this.props.addFund(name, picName, price)
+                this.props.addFunds(name, picName, price)
             }}> {/*end of form */}
                 <div className="form-group mr-sm-2">
                     <input

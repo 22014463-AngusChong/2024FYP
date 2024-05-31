@@ -15,15 +15,6 @@ class App extends Component {
     await this.loadBlockchainData()    
   }
 
-  async purchaseFund(id, price) {
-    const output = await this.state.contractInfo.methods.purchaseFund(id).send({ from: this.state.account, value: price })
-    .once('receipt', (receipt) => {
-      console.log(receipt);
-    })    
-    console.log(output)
-    window.location.assign("/")
-  }
-
   async loadWeb3() {
     //loads the connection to the blockchain (ganache )
     //window.web3 = new Web3("http://127.0.0.1:7545");
@@ -81,18 +72,27 @@ class App extends Component {
     this.purchaseFund = this.purchaseFund.bind(this)
   }
 
-  async addFunds(name, picName, age, breed, location, price) {      
+  async addFunds(name, picName, price) {      
       const balance = window.web3.eth.getBalance(this.state.account);
       console.log(balance)
       const count = await this.state.contractInfo.methods.getNoOfFunds().call()
       console.log(count.toString());
       const output = await this.state.contractInfo.methods.addFunds(name, picName, 
-                age, breed, location, price).estimateGas({from: this.state.account});
+                price).estimateGas({from: this.state.account});
       const data = await this.state.contractInfo.methods.addFunds(name, picName, 
-              age, breed, location, price).send({from: this.state.account, gas:"1000000"})
+            price).send({from: this.state.account, gas:"1000000"})
       console.log(output)
       console.log(data)
       window.open("/");
+  }
+
+  async purchaseFund(id, price) {
+    const output = await this.state.contractInfo.methods.purchaseFund(id).send({ from: this.state.account, value: price })
+    .once('receipt', (receipt) => {
+      console.log(receipt);
+    })    
+    console.log(output)
+    window.location.assign("/")
   }
    
   render() {

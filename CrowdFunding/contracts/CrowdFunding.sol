@@ -65,7 +65,7 @@ contract CrowdFunding {
     );
 
     //Write a function addFund with the relevant function parameters
-    function addFund( string memory _name, string memory _picName,
+    function addFunds( string memory _name, string memory _picName,
         uint _price) public {
         incrementFundCount();
         listOfFunds[fundsCount] = FundDetails(fundsCount, _name, _picName, _price, payable(msg.sender), FundingStatus.Ongoing);
