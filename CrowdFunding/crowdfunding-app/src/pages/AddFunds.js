@@ -31,37 +31,49 @@ class AddFunds extends Component {
           }}>
             <div className="form-group">  {/* Group all inputs */}
               <div className="row">
-                <div className="col-md-6 mb-3">
+                <div className="col-md-12 mb-3">
                   <input
                     id="fundsName"
                     type="text"
                     ref={(input) => { this.fundsName = input }}
                     className="form-control"
-                    placeholder="Fund Name"
+                    placeholder="Campaign Name"
                     required
                   />
                 </div>
                 <div className="row">
-                    <div className="col-md-6 mb-3">
+                    <div className="col-md-12 mb-3">
                   <input
                     id="fundsPic"
                     type="text"
                     ref={(input) => { this.fundsPic = input }}
                     className="form-control"
-                    placeholder="Fund Picture"
+                    placeholder="Campaign Picture"
                     required
                   />
                     </div>
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-6 mb-3">
+                <div className="col-md-12 mb-3">
                   <input
                     id="fundsPrice"
                     type="text"
                     ref={(input) => { this.fundsPrice = input }}
                     className="form-control"
-                    placeholder="Fund Price"
+                    placeholder="Campaign Price"
+                    required
+                  />
+                </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-12 mb-3">
+                  <input
+                    id="fundsPrice"
+                    type="text"
+                    ref={(input) => { this.fundsPrice = input }}
+                    className="form-control gfm-input"
+                    placeholder="Goal (ETH)"
                     required
                   />
                 </div>
