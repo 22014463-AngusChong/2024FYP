@@ -4,9 +4,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 class NavBar extends Component {
     render() {
         return (
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <div class="container-fluid">
-                    <img src="/images/petshop.png" width="200" height="200" />
+            <nav class="navbar navbar-expand-lg navbar-light" style={{ backgroundColor: 'lightgrey' }}>
+                <div class="container">
+                    <img src="logo-crowdfunding.png" width="200" height="200" />
                     <span class="navbar-brand mb-0 h1">Crowdfunding Platform </span>
                     <a class="nav-link active" href="/">Home</a>
                     <a class="nav-link active" href="/AddFunds">Add Fund</a>
@@ -17,4 +17,4 @@ class NavBar extends Component {
         )
     }
 }
-export default NavBar;
+export default NavBar;  
