@@ -38,6 +38,7 @@ contract CrowdFunding {
         string name;
         string picName;
         uint price;
+        string desc;
         address payable ownerId;
         FundingStatus status;
    }
@@ -60,17 +61,18 @@ contract CrowdFunding {
         string name,
         string picName,
         uint price,
+        string desc,
         address payable ownerId,
         FundingStatus status
     );
 
     //Write a function addFund with the relevant function parameters
     function addFunds( string memory _name, string memory _picName,
-        uint _price) public {
+        uint _price, string memory _desc) public {
         incrementFundCount();
-        listOfFunds[fundsCount] = FundDetails(fundsCount, _name, _picName, _price, payable(msg.sender), FundingStatus.Ongoing);
+        listOfFunds[fundsCount] = FundDetails(fundsCount, _name, _picName, _price, _desc, payable(msg.sender), FundingStatus.Ongoing);
         //emit the event to addFund 
-        emit FundCreated(fundsCount, _name, _picName, _price, payable(msg.sender), FundingStatus.Ongoing);
+        emit FundCreated(fundsCount, _name, _picName, _price, _desc, payable(msg.sender), FundingStatus.Ongoing);
     }
 
     function incrementFundCount() internal {
@@ -86,6 +88,7 @@ contract CrowdFunding {
         uint id,
         string name,
         uint price,
+        string desc,
         address payable owner,
         FundingStatus status
     );
@@ -113,7 +116,7 @@ contract CrowdFunding {
         // Pay the seller by sending them Ether
         payable(seller).transfer(msg.value);
         // Trigger an event
-        emit FundPurchased(fundsCount, fundsInfo.name, fundsInfo.price, payable(msg.sender), FundingStatus.Ended);
+        emit FundPurchased(fundsCount, fundsInfo.name, fundsInfo.price, fundsInfo.desc, payable(msg.sender), FundingStatus.Ended);
     }
 
 }

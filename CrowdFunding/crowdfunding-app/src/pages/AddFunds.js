@@ -20,9 +20,10 @@ class AddFunds extends Component {
             const name = this.fundsName.value;
             const picName = this.fundsPic.value;
             const price = window.web3.utils.toWei(this.fundsPrice.value.toString(), 'ether');
+            const desc = this.fundsDesc.value;
 
             try {
-              await this.props.addFunds(name, picName, price);
+              await this.props.addFunds(name, picName, price, desc);
               this.setState({ message: 'Campaign added successfully!' }); // Set success message
             } catch (error) {
               console.error('Error adding campaign:', error);
@@ -69,15 +70,15 @@ class AddFunds extends Component {
                 <div className="row">
                     <div className="col-md-12 mb-3">
                   <input
-                    id="fundsPrice"
+                    id="fundsDesc"
                     type="text"
-                    ref={(input) => { this.fundsPrice = input }}
-                    className="form-control gfm-input"
-                    placeholder="Goal (ETH)"
+                    ref={(input) => { this.fundsDesc = input }}
+                    className="form-control"
+                    placeholder="Campaign Description"
                     required
                   />
+                    </div>
                 </div>
-              </div>
             </div>
             <button type="submit" className="btn btn-primary">Add Campaign</button>
           </form>
