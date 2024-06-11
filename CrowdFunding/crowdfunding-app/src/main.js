@@ -10,9 +10,9 @@ class Main extends Component {
 
         return ( 
             <div class="container"> 
-                <h1>Funde's Fund Shop</h1> 
-                <h2>Total Number of Funds Available: {availableFundsCount}</h2> 
-                <h2>Total Number of Funds Sold: {soldFundsCount}</h2> 
+                <h1>Decentralized Crowdfunding Platform on the Blockchain</h1> 
+                <h2>Total Number of Campaigns Available: {availableFundsCount}</h2> 
+                <h2>Total Number of Campaigns Sold: {soldFundsCount}</h2> 
                 <h4>Account: {this.props.account}</h4> 
                  
                 <hr /> 
