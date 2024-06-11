@@ -34,7 +34,7 @@ class Main extends Component {
                                             <br /><br /> 
                                             <strong>Fund Price</strong>: <span class="fund-location">{window.web3.utils.fromWei(fund.price.toString(), 'ether') + " ETH"}</span><br /><br /> 
                                             <strong>Fund Owner</strong>: <span class="fund-owner">{fund.ownerId}</span><br /><br /> 
-                                            <strong>Fund Owner</strong>: <span class="fund-owner">{fund.desc}</span><br /><br /> 
+                                            <strong>Fund Description</strong>: <span class="fund-owner">{fund.desc}</span><br /><br /> 
                                             <strong>Fund Status</strong>: <span class="fund-status">{JSON.parse(fund.status) ? 'Ongoing' : 'Ended'}</span><br /><br /> 
                                             <strong> 
                                                 {  
