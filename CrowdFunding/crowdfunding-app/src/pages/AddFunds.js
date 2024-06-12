@@ -14,7 +14,15 @@ class AddFunds extends Component {
         <div className="card shadow p-3 mb-5 bg-white rounded">
           <p> Total no of Campaign {this.props.fundsCount} </p>
           <h1>Add Campaign </h1>
-          {message && <p className="alert alert-success">{message}</p>} {/* Display message if it exists */}
+          {message && (
+            <> {/* Use React fragment to avoid unnecessary wrapper */}
+              {message.includes('Error') ? (
+                <p className="alert alert-danger">{message}</p>
+              ) : (
+                <p className="alert alert-success">{message}</p>
+              )}
+            </>
+          )}
           <form onSubmit={async (event) => {
             event.preventDefault();
             const name = this.fundsName.value;
@@ -30,7 +38,7 @@ class AddFunds extends Component {
               this.setState({ message: 'Error adding campaign, please try again.' }); // Set error message
             }
           }}>
-            <div className="form-group">  {/* Group all inputs */}
+            <div className="form-group"> {/* Group all inputs */}
               <div className="row">
                 <div className="col-md-12 mb-3">
                   <input
@@ -43,16 +51,16 @@ class AddFunds extends Component {
                   />
                 </div>
                 <div className="row">
-                    <div className="col-md-12 mb-3">
-                  <input
-                    id="fundsPic"
-                    type="text"
-                    ref={(input) => { this.fundsPic = input }}
-                    className="form-control"
-                    placeholder="Campaign Picture"
-                    required
-                  />
-                    </div>
+                  <div className="col-md-12 mb-3">
+                    <input
+                      id="fundsPic"
+                      type="text"
+                      ref={(input) => { this.fundsPic = input }}
+                      className="form-control"
+                      placeholder="Campaign Picture"
+                      required
+                    />
+                  </div>
                 </div>
               </div>
               <div className="row">
@@ -66,9 +74,9 @@ class AddFunds extends Component {
                     required
                   />
                 </div>
-                </div>
-                <div className="row">
-                    <div className="col-md-12 mb-3">
+              </div>
+              <div className="row">
+                <div className="col-md-12 mb-3">
                   <input
                     id="fundsDesc"
                     type="text"
@@ -77,10 +85,12 @@ class AddFunds extends Component {
                     placeholder="Campaign Description"
                     required
                   />
-                    </div>
                 </div>
+              </div>
             </div>
-            <button type="submit" className="btn btn-primary">Add Campaign</button>
+            <div className="text-center">
+              <button type="submit" className="btn btn-primary">Add Campaign</button>
+            </div>
           </form>
         </div>
       </div>
