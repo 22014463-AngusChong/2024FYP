@@ -30,7 +30,7 @@ class Main extends Component {
                                         <img alt="140x140" width="200" className="img-fluid img-center" src={fund.picName} /> 
                                         <br /><br /> 
                                         <strong>Fund Price</strong>: <span className="fund-location">{window.web3.utils.fromWei(fund.price.toString(), 'ether') + " ETH"}</span><br /><br /> 
-                                        <strong>Campaing Owner</strong>: <span className="fund-owner">{fund.ownerId}</span><br /><br /> 
+                                        <strong>Campaign Owner</strong>: <span className="fund-owner">{fund.ownerId}</span><br /><br /> 
                                         <strong>Campaign Description</strong>: <span className="fund-owner">{fund.desc}</span><br /><br /> 
                                         <strong>Campaign Status</strong>: <span className="fund-status">{JSON.parse(fund.status) ? 'Ongoing' : 'Ended'}</span><br /><br /> 
                                         <strong> 
