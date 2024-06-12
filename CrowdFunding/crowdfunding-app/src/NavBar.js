@@ -12,6 +12,7 @@ class NavBar extends Component {
                             <a className="nav-link active" style={{ color: 'black' }} href="/">Home</a>
                             <a className="nav-link active" style={{ color: 'black' }} href="/AddFunds">Add Fund</a>
                             <a className="nav-link active" style={{ color: 'black' }} href="/AboutUs">About Us</a>
+                            <a className="nav-link active" style={{ color: 'black' }} href="/ContactUs">Contact Us</a>
                         </div>
                         <div className="nav-item logo">
                             <img src="logo-crowdfunding.png" width="100" height="auto" alt="Logo" />
