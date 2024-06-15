@@ -107,16 +107,12 @@ contract CrowdFunding {
         require(fundsInfo.status == FundingStatus.Ongoing);
         // Require that the buyer is not the seller
         require(seller != msg.sender);
-        // Transfer ownership to the buyer
-        fundsInfo.ownerId = payable(msg.sender);
-        // Mark as purchased
-        fundsInfo.status = FundingStatus.Ended;
         // Update the product
         listOfFunds[_id] = fundsInfo;
         // Pay the seller by sending them Ether
         payable(seller).transfer(msg.value);
         // Trigger an event
-        emit FundPurchased(fundsCount, fundsInfo.name, fundsInfo.price, fundsInfo.desc, payable(msg.sender), FundingStatus.Ended);
+        emit FundPurchased(fundsCount, fundsInfo.name, fundsInfo.price, fundsInfo.desc, payable(msg.sender), FundingStatus.Ongoing);
     }
 
 }

@@ -43,8 +43,8 @@ class Main extends Component {
                                                                 console.log("buy clicked") 
                                                                 this.props.purchaseFund(event.target.name, event.target.value) 
                                                             }} 
-                                                    >Buy</button> 
-                                                : <p>Sold</p>                                       
+                                                    >Donate</button> 
+                                                : <p>Thank you</p>                                       
                                             } 
                                         </strong> 
                                     </div> 
