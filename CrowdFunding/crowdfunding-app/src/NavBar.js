@@ -11,14 +11,22 @@ class NavBar extends Component {
                         <div className="nav-item d-none d-lg-block">
                             <a className="nav-link active" style={{ color: 'black' }} href="/">Home</a>
                             <a className="nav-link active" style={{ color: 'black' }} href="/AddFunds">Add Fund</a>
-                            <a className="nav-link active" style={{ color: 'black' }} href="/AboutUs">About Us</a>
-                            <a className="nav-link active" style={{ color: 'black' }} href="/ContactUs">Contact Us</a>
                         </div>
                         <div className="nav-item logo">
-                            <img src="logo-crowdfunding.png" width="100" height="auto" alt="Logo" />
+                        <a href="/">
+                                <img src="logo-crowdfunding.png" width="200" height="200" alt="Logo" />
+                            </a>
                         </div>
-                        <div className="nav-item">
-                        
+                        <div className="nav-item dropdown">
+                            <a className="nav-link dropdown-toggle active" style={{ color: 'black' }} href="/AboutUs" id="aboutUsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                About Us
+                            </a>
+                            {/* <ul className="dropdown-menu" aria-labelledby="aboutUsDropdown">
+                                <li><a className="dropdown-item" href="/AboutUs/OurTeam">Our Team</a></li>
+                                <li><a className="dropdown-item" href="/AboutUs/OurStory">Our Story</a></li>
+                                <li><a className="dropdown-item" href="/AboutUs/Careers">Careers</a></li>
+                            </ul> */}
+                            <a className="nav-link active" style={{ color: 'black' }} href="/ContactUs">Contact Us</a>
                         </div>
                     </div>
                 </div>
@@ -28,3 +36,4 @@ class NavBar extends Component {
 }
 
 export default NavBar;
+
