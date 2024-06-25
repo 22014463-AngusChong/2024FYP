@@ -28,10 +28,12 @@ class AddFunds extends Component {
             const name = this.fundsName.value;
             const picName = this.fundsPic.value;
             const price = window.web3.utils.toWei(this.fundsPrice.value.toString(), 'ether');
+            const goal = window.web3.utils.toWei(this.fundsGoal.value.toString(), 'ether');
+            const donated = window.web3.utils.toWei(this.fundsDonated.value.toString(), 'ether');
             const desc = this.fundsDesc.value;
 
             try {
-              await this.props.addFunds(name, picName, price, desc);
+              await this.props.addFunds(name, picName, price, goal, donated, desc);
               this.setState({ message: 'Campaign added successfully!' }); // Set success message
             } catch (error) {
               console.error('Error adding campaign:', error);
@@ -71,6 +73,30 @@ class AddFunds extends Component {
                     ref={(input) => { this.fundsPrice = input }}
                     className="form-control"
                     placeholder="Campaign Price"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-12 mb-3">
+                  <input
+                    id="fundsGoal"
+                    type="text"
+                    ref={(input) => { this.fundsGoal = input }}
+                    className="form-control"
+                    placeholder="Campaign Goal"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-12 mb-3">
+                  <input
+                    id="fundsDonated"
+                    type="text"
+                    ref={(input) => { this.fundsDonated = input }}
+                    className="form-control"
+                    placeholder="Funds Donated"
                     required
                   />
                 </div>

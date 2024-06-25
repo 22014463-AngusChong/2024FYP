@@ -3,16 +3,13 @@ import React, { Component } from 'react';
 class Main extends Component { 
     render() { 
         const { listOfFunds } = this.props; 
-        const availableFundsCount = listOfFunds.reduce((count, fund) => { 
-            return JSON.parse(fund.status) ? count + 1 : count; 
-        }, 0); 
-        const soldFundsCount = listOfFunds.length - availableFundsCount; 
+        
+         
+         
 
         return ( 
             <div className="container text-center"> 
-                <h1 className="mt-4">Decentralized Crowdfunding Platform on the Blockchain</h1> 
-                <h2>Total Number of Campaigns Available: {availableFundsCount}</h2> 
-                <h2>Total Number of Campaigns Sold: {soldFundsCount}</h2> 
+                <h1 className="mt-4">Welcome!</h1> 
                 <h4>Account: {this.props.account}</h4> 
                  
                 <hr /> 

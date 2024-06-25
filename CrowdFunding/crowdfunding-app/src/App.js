@@ -72,15 +72,15 @@ class App extends Component {
     this.purchaseFund = this.purchaseFund.bind(this)
   }
 
-  async addFunds(name, picName, price, desc) {      
+  async addFunds(name, picName, price, goal, donated, desc) {      
       const balance = window.web3.eth.getBalance(this.state.account);
       console.log(balance)
       const count = await this.state.contractInfo.methods.getNoOfFunds().call()
       console.log(count.toString());
       const output = await this.state.contractInfo.methods.addFunds(name, picName, 
-                price, desc).estimateGas({from: this.state.account});
+                price, goal, donated, desc).estimateGas({from: this.state.account});
       const data = await this.state.contractInfo.methods.addFunds(name, picName, 
-            price, desc).send({from: this.state.account, gas:"1000000"})
+            price, goal, donated, desc).send({from: this.state.account, gas:"1000000"})
       console.log(output)
       console.log(data)
       window.open("/");
