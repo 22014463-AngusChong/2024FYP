@@ -99,32 +99,20 @@ contract CrowdFunding {
         FundingStatus status
     );
 
-    //add a function to purchase fund with the fund id
     function purchaseFund(uint _id) public payable {
-        // Fetch the product
-        FundDetails memory fundsInfo = listOfFunds[_id];
-        // Fetch the owner
-        address payable seller = fundsInfo.ownerId;
-        // Make sure the product has a valid id
-        require(fundsInfo.fundId > 0 && fundsInfo.fundId <= fundsCount);
-        // Require that there is enough Ether in the transaction
-        require(msg.value >= fundsInfo.price);
-        // Require that the product has not been purchased already
-        require(fundsInfo.status == FundingStatus.Ongoing);
-        // Require that the buyer is not the seller
-        require(seller != msg.sender);
-        // Update the product
-        listOfFunds[_id] = fundsInfo;
-        // Pay the seller by sending them Ether
-        payable(seller).transfer(msg.value);
-        fundsInfo.donated+=msg.value;
-        // Trigger an event
-        if (fundsInfo.donated == fundsInfo.goal) {
-            emit FundPurchased(fundsCount, fundsInfo.name, fundsInfo.price, fundsInfo.goal, fundsInfo.donated, fundsInfo.desc, payable(msg.sender), FundingStatus.Ended);
-        }
-        else {
-            emit FundPurchased(fundsCount, fundsInfo.name, fundsInfo.price, fundsInfo.goal, fundsInfo.donated, fundsInfo.desc, payable(msg.sender), FundingStatus.Ongoing);
-        }
+    FundDetails storage fundsInfo = listOfFunds[_id];
+    address payable seller = fundsInfo.ownerId;
+    require(fundsInfo.fundId > 0 && fundsInfo.fundId <= fundsCount, "Invalid fund ID");
+    require(msg.value >= fundsInfo.price, "Not enough Ether sent");
+    require(fundsInfo.status == FundingStatus.Ongoing, "Fund already purchased");
+    require(seller != msg.sender, "Seller cannot buy own fund");
+    fundsInfo.donated += msg.value;
+    payable(seller).transfer(msg.value);
+    if (fundsInfo.donated >= fundsInfo.goal) {
+        fundsInfo.status = FundingStatus.Ended;
     }
+    emit FundPurchased(fundsInfo.fundId, fundsInfo.name, fundsInfo.price, fundsInfo.goal, fundsInfo.donated, fundsInfo.desc, payable(msg.sender), fundsInfo.status);
+}
+
 
 }
