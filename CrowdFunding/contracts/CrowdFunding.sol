@@ -38,6 +38,8 @@ contract CrowdFunding {
         string name;
         string picName;
         uint price;
+        uint goal;
+        uint donated;
         string desc;
         address payable ownerId;
         FundingStatus status;
@@ -61,6 +63,8 @@ contract CrowdFunding {
         string name,
         string picName,
         uint price,
+        uint goal,
+        uint donated,
         string desc,
         address payable ownerId,
         FundingStatus status
@@ -68,11 +72,11 @@ contract CrowdFunding {
 
     //Write a function addFund with the relevant function parameters
     function addFunds( string memory _name, string memory _picName,
-        uint _price, string memory _desc) public {
+        uint _price, uint _goal, uint _donated, string memory _desc) public {
         incrementFundCount();
-        listOfFunds[fundsCount] = FundDetails(fundsCount, _name, _picName, _price, _desc, payable(msg.sender), FundingStatus.Ongoing);
+        listOfFunds[fundsCount] = FundDetails(fundsCount, _name, _picName, _price, _goal, _donated, _desc, payable(msg.sender), FundingStatus.Ongoing);
         //emit the event to addFund 
-        emit FundCreated(fundsCount, _name, _picName, _price, _desc, payable(msg.sender), FundingStatus.Ongoing);
+        emit FundCreated(fundsCount, _name, _picName, _price, _goal, _donated, _desc, payable(msg.sender), FundingStatus.Ongoing);
     }
 
     function incrementFundCount() internal {
@@ -88,6 +92,8 @@ contract CrowdFunding {
         uint id,
         string name,
         uint price,
+        uint goal,
+        uint donated,
         string desc,
         address payable owner,
         FundingStatus status
@@ -111,8 +117,14 @@ contract CrowdFunding {
         listOfFunds[_id] = fundsInfo;
         // Pay the seller by sending them Ether
         payable(seller).transfer(msg.value);
+        fundsInfo.donated+=msg.value;
         // Trigger an event
-        emit FundPurchased(fundsCount, fundsInfo.name, fundsInfo.price, fundsInfo.desc, payable(msg.sender), FundingStatus.Ongoing);
+        if (fundsInfo.donated == fundsInfo.goal) {
+            emit FundPurchased(fundsCount, fundsInfo.name, fundsInfo.price, fundsInfo.goal, fundsInfo.donated, fundsInfo.desc, payable(msg.sender), FundingStatus.Ended);
+        }
+        else {
+            emit FundPurchased(fundsCount, fundsInfo.name, fundsInfo.price, fundsInfo.goal, fundsInfo.donated, fundsInfo.desc, payable(msg.sender), FundingStatus.Ongoing);
+        }
     }
 
 }
