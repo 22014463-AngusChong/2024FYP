@@ -4,9 +4,6 @@ class Main extends Component {
     render() { 
         const { listOfFunds } = this.props; 
         
-         
-         
-
         return ( 
             <div className="container text-center"> 
                 <h1 className="mt-4">Welcome!</h1> 
@@ -16,6 +13,10 @@ class Main extends Component {
                 <br /> 
                 <div id="fundsRow" className="row"> 
                     {listOfFunds.map((fund, key) => {   
+                        const goalInEther = window.web3.utils.fromWei(fund.goal.toString(), 'ether');
+                        const donatedInEther = window.web3.utils.fromWei(fund.donated.toString(), 'ether');
+                        const progress = (donatedInEther / goalInEther) * 100;
+                        
                         return (                                    
                             <div key={key} className="col-sm-6 col-md-4 col-lg-3 mb-4"> 
                                 <div className="card h-100"> 
@@ -30,8 +31,12 @@ class Main extends Component {
                                         <strong>Campaign Owner</strong>: <span className="fund-owner">{fund.ownerId}</span><br /><br /> 
                                         <strong>Campaign Description</strong>: <span className="fund-owner">{fund.desc}</span><br /><br /> 
                                         <strong>Campaign Status</strong>: <span className="fund-status">{JSON.parse(fund.status) ? 'Ongoing' : 'Ended'}</span><br /><br /> 
-                                        <strong>Campaign Goal</strong>: <span className="fund-goal">{window.web3.utils.fromWei(fund.goal.toString(), 'ether') + " ETH"}</span><br /><br />
-                                        <strong>Funds Donated</strong>: <span className="fund-donated">{window.web3.utils.fromWei(fund.donated.toString(), 'ether') + " ETH"}</span><br /><br /> 
+                                        <strong>Campaign Goal</strong>: <span className="fund-goal">{goalInEther + " ETH"}</span><br /><br />
+                                        <strong>Funds Donated</strong>: <span className="fund-donated">{donatedInEther + " ETH"}</span><br /><br /> 
+
+                                        <strong>Donation Progress</strong>: <br />
+                                        <progress value={progress} max="100" className="progress-bar"></progress><br /><br /> 
+
                                         <strong>
                                             {  
                                                 JSON.parse(fund.status) ? 
@@ -86,6 +91,25 @@ class Main extends Component {
                     .mt-4 {
                         margin-top: 1.5rem !important;
                     }
+                    .progress-bar {
+                        width: 100%;
+                        height: 20px;
+                        -webkit-appearance: none;
+                        appearance: none;
+                    }
+                    .progress-bar::-webkit-progress-bar {
+                        background-color: #f3f3f3;
+                        border-radius: 8px;
+                        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+                    }
+                    .progress-bar::-webkit-progress-value {
+                        background-color: #4caf50;
+                        border-radius: 8px;
+                    }
+                    .progress-bar::-moz-progress-bar {
+                        background-color: #4caf50;
+                        border-radius: 8px;
+                    }
                 `}</style>
             </div> 
         ) 
@@ -93,3 +117,4 @@ class Main extends Component {
 } 
 
 export default Main;
+
