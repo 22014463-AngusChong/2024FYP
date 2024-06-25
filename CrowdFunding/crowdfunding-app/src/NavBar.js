@@ -21,12 +21,13 @@ class NavBar extends Component {
                             <a className="nav-link dropdown-toggle active" style={{ color: 'black' }} href="/AboutUs" id="aboutUsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 About Us
                             </a>
+                            <a className="nav-link active" style={{ color: 'black' }} href="/ContactUs">Contact Us</a>
                             {/* <ul className="dropdown-menu" aria-labelledby="aboutUsDropdown">
                                 <li><a className="dropdown-item" href="/AboutUs/OurTeam">Our Team</a></li>
                                 <li><a className="dropdown-item" href="/AboutUs/OurStory">Our Story</a></li>
                                 <li><a className="dropdown-item" href="/AboutUs/Careers">Careers</a></li>
                             </ul> */}
-                            <a className="nav-link active" style={{ color: 'black' }} href="/ContactUs">Contact Us</a>
+                            
                         </div>
                     </div>
                 </div>
