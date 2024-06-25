@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AboutUs from "./pages/AboutUs";
 import Layout from "./pages/Layout";
 import AddFund from "./pages/AddFunds";
+import ContactUs from "./pages/ContactUs";
 import CrowdFunding from './build/CrowdFunding.json';
 import Main from './Main'
 
@@ -108,6 +109,7 @@ class App extends Component {
               <Routes>
                 <Route path="/" element={<Layout />}/>
                 <Route path="AboutUs" element={<AboutUs />} />
+                <Route path="ContactUs" element={<ContactUs />} />
 
                 <Route index element={<Main
                     fundsCount={this.state.fundsCount}
