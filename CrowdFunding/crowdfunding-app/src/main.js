@@ -30,7 +30,9 @@ class Main extends Component {
                                         <strong>Campaign Owner</strong>: <span className="fund-owner">{fund.ownerId}</span><br /><br /> 
                                         <strong>Campaign Description</strong>: <span className="fund-owner">{fund.desc}</span><br /><br /> 
                                         <strong>Campaign Status</strong>: <span className="fund-status">{JSON.parse(fund.status) ? 'Ongoing' : 'Ended'}</span><br /><br /> 
-                                        <strong> 
+                                        <strong>Campaign Goal</strong>: <span className="fund-goal">{window.web3.utils.fromWei(fund.donated.toString(), 'ether') + " ETH"}</span><br /><br />
+                                        <strong>Funds Donated</strong>: <span className="fund-donated">{window.web3.utils.fromWei(fund.donated.toString(), 'ether') + " ETH"}</span><br /><br /> 
+                                        <strong>
                                             {  
                                                 JSON.parse(fund.status) ? 
                                                     <button className="btn btn-primary buyButton" 
