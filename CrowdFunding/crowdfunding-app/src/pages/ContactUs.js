@@ -28,79 +28,63 @@ const ContactUs = () => {
   };
 
   return (
-    <div style={styles.contactUs}>
-      <h2>Contact Us</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={styles.formGroup}>
-          <label>Name</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            style={styles.input}
-          />
-        </div>
-        <div style={styles.formGroup}>
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            style={styles.input}
-          />
-        </div>
-        <div style={styles.formGroup}>
-          <label>Message</label>
-          <textarea
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-            required
-            style={styles.textarea}
-          />
-        </div>
-        <button type="submit" style={styles.button}>Send</button>
-      </form>
-      {notification && <p>{notification}</p>}
+    <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+      <div className="card shadow p-4 mb-5 bg-white rounded" style={{ maxWidth: '600px', width: '100%' }}>
+        <h1 className="mb-4 text-center">Contact Us</h1>
+        {notification && (
+          <div className={`alert ${notification.includes('Error') ? 'alert-danger' : 'alert-success'}`} role="alert">
+            {notification}
+          </div>
+        )}
+        <form onSubmit={handleSubmit}>
+          <div className="form-group mb-3">
+            <label htmlFor="name" className="form-label">Name</label>
+            <input
+              id="name"
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="form-control"
+              placeholder="Enter your name"
+              required
+            />
+          </div>
+          <div className="form-group mb-3">
+            <label htmlFor="email" className="form-label">Email</label>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="form-control"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div className="form-group mb-4">
+            <label htmlFor="message" className="form-label">Message</label>
+            <textarea
+              id="message"
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              className="form-control"
+              placeholder="Enter your message"
+              rows="4"
+              required
+            />
+          </div>
+          <div className="text-center">
+            <button type="submit" className="btn btn-primary btn-lg">Send</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
 
-const styles = {
-  contactUs: {
-    maxWidth: '600px',
-    margin: '0 auto',
-    padding: '1em',
-    background: '#f9f9f9',
-    borderRadius: '5px',
-  },
-  formGroup: {
-    marginBottom: '1em',
-  },
-  input: {
-    width: '100%',
-    padding: '0.5em',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-  },
-  textarea: {
-    width: '100%',
-    padding: '0.5em',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-  },
-  button: {
-    padding: '0.7em 2em',
-    background: '#007bff',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-  },
-};
-
 export default ContactUs;
+
+

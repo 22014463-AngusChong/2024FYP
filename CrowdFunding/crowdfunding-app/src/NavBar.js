@@ -25,7 +25,7 @@ class NavBar extends Component {
                             </a>
                         </div>
                             <li className="nav-item dropdown"></li>
-                        <a className="nav-link active" style={{ color: 'black' }} href="/AboutUs">AboutUs
+                        <a className="nav-link active" style={{ color: 'black' }} href="/AboutUs">About Us
                         </a>
                             <a className="nav-link active" style={{ color: 'black' }} href="/ContactUs">Contact Us</a>
                         </ul>
