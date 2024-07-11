@@ -121,7 +121,7 @@ contract CrowdFunding {
     if (fundsInfo.donated >= fundsInfo.goal) {
         fundsInfo.status = FundingStatus.Ended;
     }
-    emit FundDonated(fundsInfo.fundId, fundsInfo.name, msg.value, fundsInfo.goal, fundsInfo.donated, fundsInfo.desc, payable(msg.sender), fundsInfo.status);
+    emit FundDonated(fundsInfo.fundId, fundsInfo.name, fundsInfo.price, fundsInfo.goal, fundsInfo.donated, fundsInfo.desc, payable(msg.sender), fundsInfo.status);
 }
 
 
