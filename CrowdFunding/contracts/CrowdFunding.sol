@@ -88,7 +88,7 @@ contract CrowdFunding {
     }
 
     //create the event to purchase the Fund
-    event FundPurchased(
+    event FundDonated(
         uint id,
         string name,
         uint price,
@@ -99,7 +99,7 @@ contract CrowdFunding {
         FundingStatus status
     );
 
-    function purchaseFund(uint _id) public payable {
+    function donateFund(uint _id) public payable {
     FundDetails storage fundsInfo = listOfFunds[_id];
     address payable seller = fundsInfo.ownerId;
     require(fundsInfo.fundId > 0 && fundsInfo.fundId <= fundsCount, "Invalid fund ID");
@@ -111,7 +111,7 @@ contract CrowdFunding {
     if (fundsInfo.donated >= fundsInfo.goal) {
         fundsInfo.status = FundingStatus.Ended;
     }
-    emit FundPurchased(fundsInfo.fundId, fundsInfo.name, fundsInfo.price, fundsInfo.goal, fundsInfo.donated, fundsInfo.desc, payable(msg.sender), fundsInfo.status);
+    emit FundDonated(fundsInfo.fundId, fundsInfo.name, fundsInfo.price, fundsInfo.goal, fundsInfo.donated, fundsInfo.desc, payable(msg.sender), fundsInfo.status);
 }
 
 
