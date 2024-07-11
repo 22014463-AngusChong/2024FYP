@@ -37,10 +37,10 @@ contract CrowdFunding {
         uint fundId;
         string name;
         string picName;
-        uint price;
         uint goal;
         uint donated;
         string desc;
+        uint256[] donations;
         address payable ownerId;
         FundingStatus status;
    }
@@ -52,17 +52,22 @@ contract CrowdFunding {
         string lastName;
         string mobileNo;
         string email;
+    }
+
+    struct donationinfo {
+        address donor;
+        uint amnt;
     }    
 
     //FundDetails[] public listOfFunds;
     mapping (uint => FundDetails) public listOfFunds;
+    donationinfo[] public donations;
 
     //create the event to add Fund
     event FundCreated(
         uint fundId,
         string name,
         string picName,
-        uint price,
         uint goal,
         uint donated,
         string desc,
@@ -72,11 +77,12 @@ contract CrowdFunding {
 
     //Write a function addFund with the relevant function parameters
     function addFunds( string memory _name, string memory _picName,
-        uint _price, uint _goal, uint _donated, string memory _desc) public {
+        uint _goal, uint _donated, string memory _desc) public {
         incrementFundCount();
-        listOfFunds[fundsCount] = FundDetails(fundsCount, _name, _picName, _price, _goal, _donated, _desc, payable(msg.sender), FundingStatus.Ongoing);
+        uint[] memory empDonations;
+        listOfFunds[fundsCount] = FundDetails(fundsCount, _name, _picName, _goal, _donated, _desc, empDonations, payable(msg.sender), FundingStatus.Ongoing);
         //emit the event to addFund 
-        emit FundCreated(fundsCount, _name, _picName, _price, _goal, _donated, _desc, payable(msg.sender), FundingStatus.Ongoing);
+        emit FundCreated(fundsCount, _name, _picName, _goal, _donated, _desc, payable(msg.sender), FundingStatus.Ongoing);
     }
 
     function incrementFundCount() internal {
@@ -88,10 +94,10 @@ contract CrowdFunding {
     }
 
     //create the event to purchase the Fund
-    event FundPurchased(
+    event FundDonated(
         uint id,
         string name,
-        uint price,
+        uint amnt,
         uint goal,
         uint donated,
         string desc,
@@ -99,19 +105,23 @@ contract CrowdFunding {
         FundingStatus status
     );
 
-    function purchaseFund(uint _id) public payable {
+    function donateFund(uint _id) public payable {
     FundDetails storage fundsInfo = listOfFunds[_id];
     address payable seller = fundsInfo.ownerId;
     require(fundsInfo.fundId > 0 && fundsInfo.fundId <= fundsCount, "Invalid fund ID");
-    require(msg.value >= fundsInfo.price, "Not enough Ether sent");
-    require(fundsInfo.status == FundingStatus.Ongoing, "Fund already purchased");
-    require(seller != msg.sender, "Seller cannot buy own fund");
+    require(fundsInfo.status == FundingStatus.Ongoing, "Campaign reached goal");
+    require(seller != msg.sender, "Seller cannot donate own fund");
     fundsInfo.donated += msg.value;
+    fundsInfo.donations.push(msg.value);
+    donations.push(donationinfo({
+        donor: msg.sender,
+        amnt: msg.value
+    }));
     payable(seller).transfer(msg.value);
     if (fundsInfo.donated >= fundsInfo.goal) {
         fundsInfo.status = FundingStatus.Ended;
     }
-    emit FundPurchased(fundsInfo.fundId, fundsInfo.name, fundsInfo.price, fundsInfo.goal, fundsInfo.donated, fundsInfo.desc, payable(msg.sender), fundsInfo.status);
+    emit FundDonated(fundsInfo.fundId, fundsInfo.name, msg.value, fundsInfo.goal, fundsInfo.donated, fundsInfo.desc, payable(msg.sender), fundsInfo.status);
 }
 
 
