@@ -3,6 +3,7 @@ import Layout from "./pages/Layout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 
+
 class NavBar extends Component {
     render() {
         return (
@@ -17,17 +18,17 @@ class NavBar extends Component {
                                 <a className="nav-link active" style={{ color: 'black' }} href="/">Home</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link active" style={{ color: 'black' }} href="/AddFunds">Add Funds</a>
+                                <a className="nav-link active" style={{ color: 'black' }} href="/AddFunds">Add Funds</a>                                
                             </li>
+
                             <div className="nav-item logo">
-                        <a href="/">
-                                <img src="Logo2.png" width="200" height="200" alt="Logo" />
-                            </a>
+                        <a className="nav-item logo" style={{ color: 'green', textDecoration: 'none' }}> 
+                        <b>GetFund </b></a>
                         </div>
                             <li className="nav-item dropdown"></li>
-                        <a className="nav-link active" style={{ color: 'black' }} href="/AboutUs">About Us
+                        <a className="nav-link active" style={{ color: 'black' }} href="/AboutUs">About Us                        
                         </a>
-                            <a className="nav-link active" style={{ color: 'black' }} href="/ContactUs">Contact Us</a>
+                            <a className="nav-link active" style={{ color: 'black' }} href="/ContactUs">Contact Us</a>                           
                         </ul>
                     </div>
                 </div>
