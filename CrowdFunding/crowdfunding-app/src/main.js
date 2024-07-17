@@ -4,28 +4,50 @@ class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            donationAmounts: {}
+            donationAmounts: {},
+            showModal: false,
+            activeFundId: null,
+            errorMessage: ''
         };
     }
 
-    handleDonationChange = (fundId, event) => {
+    handleDonationChange = (event) => {
+        const { activeFundId } = this.state;
         const donationAmounts = { ...this.state.donationAmounts };
-        donationAmounts[fundId] = event.target.value;
-        this.setState({ donationAmounts });
+        donationAmounts[activeFundId] = event.target.value;
+        this.setState({ donationAmounts, errorMessage: '' });
     }
 
-    handleDonate = (fundId) => {
-        const amountInWei = window.web3.utils.toWei(this.state.donationAmounts[fundId], 'ether');
-        this.props.donateFund(fundId, amountInWei);
+    handleDonate = () => {
+        const { activeFundId, donationAmounts } = this.state;
+        const amount = parseFloat(donationAmounts[activeFundId]);
+
+        if (amount <= 0) {
+            this.setState({ errorMessage: 'Donation amount must be greater than zero.' });
+            return;
+        }
+
+        const amountInWei = window.web3.utils.toWei(donationAmounts[activeFundId], 'ether');
+        this.props.donateFund(activeFundId, amountInWei);
+        this.setState({ showModal: false, activeFundId: null, errorMessage: '' });
+    }
+
+    handleShowModal = (fundId) => {
+        this.setState({ showModal: true, activeFundId: fundId, errorMessage: '' });
+    }
+
+    handleCloseModal = () => {
+        this.setState({ showModal: false, activeFundId: null, errorMessage: '' });
     }
 
     render() {
-        const { listOfFunds } = this.props;
+        const { listOfFunds, account } = this.props;
+        const { showModal, activeFundId, donationAmounts, errorMessage } = this.state;
 
         return (
             <div className="container text-center">
                 <h1 className="mt-4">Welcome!</h1>
-                <h4>Account: {this.props.account}</h4>
+                <h4>Account: {account}</h4>
 
                 <hr />
                 <br />
@@ -50,25 +72,17 @@ class Main extends Component {
                                         <strong>Campaign Status</strong>: <span className="fund-status">{JSON.parse(fund.status) ? 'Ongoing' : 'Ended'}</span><br /><br />
                                         <strong>Campaign Goal</strong>: <span className="fund-goal">{goalInEther + " ETH"}</span><br /><br />
                                         <strong>Funds Donated</strong>: <span className="fund-donated">{donatedInEther + " ETH"}</span><br /><br />
-                                        <div>
-                                            <input
-                                                type="text"
-                                                placeholder="Enter donation amount"
-                                                value={this.state.donationAmounts[fund.fundId] || ''}
-                                                onChange={(event) => this.handleDonationChange(fund.fundId, event)}
-                                            />
-                                        </div>
-                                        <br />
                                         <strong>Donation Progress</strong>: <br />
                                         <progress value={progress} max="100" className="progress-bar"></progress><br />
-
                                         <strong>
-                                            {
-                                                JSON.parse(fund.status) ?
-                                                    <button className="btn btn-primary buyButton"
-                                                            onClick={() => this.handleDonate(fund.fundId)}
-                                                    >Donate</button>
-                                                    : <p>Thank you</p>
+                                            {JSON.parse(fund.status) ?
+                                                <button
+                                                    className="btn btn-primary buyButton"
+                                                    onClick={() => this.handleShowModal(fund.fundId)}
+                                                >
+                                                    Donate
+                                                </button>
+                                                : <p>Thank you</p>
                                             }
                                         </strong>
                                     </div>
@@ -77,6 +91,22 @@ class Main extends Component {
                         )
                     })}
                 </div>
+                {showModal && (
+                    <div className="modal">
+                        <div className="modal-content">
+                            <span className="close" onClick={this.handleCloseModal}>&times;</span>
+                            <h2>Enter Donation Amount</h2>
+                            <input
+                                type="text"
+                                placeholder="Enter donation amount"
+                                value={donationAmounts[activeFundId] || ''}
+                                onChange={this.handleDonationChange}
+                            />
+                            {errorMessage && <p className="error">{errorMessage}</p>}
+                            <button className="btn btn-primary" onClick={this.handleDonate}>Donate</button>
+                        </div>
+                    </div>
+                )}
                 <style jsx>{`
                     .container {
                         margin-top: 20px;
@@ -129,6 +159,48 @@ class Main extends Component {
                     .progress-bar::-moz-progress-bar {
                         background-color: #4caf50;
                         border-radius: 8px;
+                    }
+                    .modal {
+                        display: block;
+                        position: fixed;
+                        z-index: 1;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        height: 100%;
+                        overflow: auto;
+                        background-color: rgb(0,0,0);
+                        background-color: rgba(0,0,0,0.4);
+                    }
+                    .modal-content {
+                        background-color: #fefefe;
+                        margin: 15% auto;
+                        padding: 20px;
+                        border: 1px solid #888;
+                        width: 80%;
+                        max-width: 500px;
+                        text-align: center;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }
+                    .close {
+                        color: #aaa;
+                        float: right;
+                        font-size: 28px;
+                        font-weight: bold;
+                    }
+                    .close:hover,
+                    .close:focus {
+                        color: black;
+                        text-decoration: none;
+                        cursor: pointer;
+                    }
+                    .btn {
+                        margin-top: 10px;
+                    }
+                    .error {
+                        color: red;
+                        margin-top: 10px;
                     }
                 `}</style>
             </div>
