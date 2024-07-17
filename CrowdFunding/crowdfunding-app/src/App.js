@@ -1,32 +1,30 @@
 import React, { Component } from 'react';
 import NavBar from './NavBar';
-import Footer from './footer'
+import Footer from './footer';
 import Web3 from 'web3';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import AboutUs from "./pages/AboutUs";
 import Layout from "./pages/Layout";
-import AddFund from "./pages/AddFunds";
 import ContactUs from "./pages/ContactUs";
 import CrowdFunding from './build/CrowdFunding.json';
-import Main from './Main'
+import Main from './Main';
+import AddFunds from './pages/AddFunds';
 
 class App extends Component {
   async componentWillMount() {
-    await this.loadWeb3()
-    await this.loadBlockchainData()    
+    await this.loadWeb3();
+    await this.loadBlockchainData();
   }
 
   async loadWeb3() {
     if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum)
-      await window.ethereum.enable()
-   }
-   else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider)
-   }
-   else {
-       window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
-   } 
+      window.web3 = new Web3(window.ethereum);
+      await window.ethereum.enable();
+    } else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider);
+    } else {
+      window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!');
+    }
   }
 
   async loadBlockchainData() {
@@ -36,7 +34,7 @@ class App extends Component {
 
     const networkId = await web3.eth.net.getId();
     const networkData = CrowdFunding.networks[networkId];
-    
+
     if (networkData) {
       const contractInfo = new web3.eth.Contract(CrowdFunding.abi, networkData.address);
       this.setState({ contractInfo });
@@ -59,72 +57,86 @@ class App extends Component {
   }
 
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       account: '',
       fundsCount: 0,
-      loading: true,   
-      listOfFunds: [],        
-    }
-    this.addFunds = this.addFunds.bind(this)
-    this.donateFund = this.donateFund.bind(this)
+      loading: true,
+      listOfFunds: [],
+    };
+    this.addFunds = this.addFunds.bind(this);
+    this.donateFund = this.donateFund.bind(this);
   }
 
-  async addFunds(name, picName, price, goal, donated, desc) {      
-      const balance = window.web3.eth.getBalance(this.state.account);
-      console.log(balance)
-      const count = await this.state.contractInfo.methods.getNoOfFunds().call()
-      console.log(count.toString());
-      const output = await this.state.contractInfo.methods.addFunds(name, picName, 
-                price, goal, donated, desc).estimateGas({from: this.state.account});
-      const data = await this.state.contractInfo.methods.addFunds(name, picName, 
-            price, goal, donated, desc).send({from: this.state.account, gas:"1000000"})
-      console.log(output)
-      console.log(data)
-      window.open("/");
+  async addFunds(name, picName, goal, donated, desc, navigate) {
+    const balance = window.web3.eth.getBalance(this.state.account);
+    console.log(balance);
+    const count = await this.state.contractInfo.methods.getNoOfFunds().call();
+    console.log(count.toString());
+    const output = await this.state.contractInfo.methods.addFunds(name, picName,
+      goal, donated, desc).estimateGas({ from: this.state.account });
+    const data = await this.state.contractInfo.methods.addFunds(name, picName,
+      goal, donated, desc).send({ from: this.state.account, gas: "1000000" });
+    console.log(output);
+    console.log(data);
+
+    // Fetch the newly added campaign
+    const newCampaignId = await this.state.contractInfo.methods.getNoOfFunds().call();
+    const newCampaign = await this.state.contractInfo.methods.listOfFunds(newCampaignId).call();
+    this.setState({
+      listOfFunds: [...this.state.listOfFunds, newCampaign],
+      fundsCount: newCampaignId
+    });
+
+    navigate("/");  // Use the navigate function to redirect to the main page
   }
 
   async donateFund(id, amount) {
     const output = await this.state.contractInfo.methods.donateFund(id).send({ from: this.state.account, value: amount })
-    .once('receipt', (receipt) => {
-      console.log(receipt);
-    })    
-    console.log(output)
-    window.location.assign("/")
+      .once('receipt', (receipt) => {
+        console.log(receipt);
+      });
+    console.log(output);
+    window.location.assign("/");
   }
-   
+
   render() {
     return (
       <div>
         <NavBar account={this.state.account} />
         {
           this.state.loading
-              ? <div id="loader" className="text-center">
-                <p className="text-center">Loading...</p></div>
-          :                    
+            ? <div id="loader" className="text-center">
+              <p className="text-center">Loading...</p></div>
+            :
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<Layout />}/>
+                <Route path="/" element={<Layout />} />
                 <Route path="AboutUs" element={<AboutUs />} />
                 <Route path="ContactUs" element={<ContactUs />} />
 
                 <Route index element={<Main
-                    fundsCount={this.state.fundsCount}
-                    account={this.state.account}
-                    listOfFunds={this.state.listOfFunds}
-                    donateFund = {this.donateFund} />} />
+                  fundsCount={this.state.fundsCount}
+                  account={this.state.account}
+                  listOfFunds={this.state.listOfFunds}
+                  donateFund={this.donateFund} />} />
 
-                <Route path="AddFunds" element={<AddFund
-                    fundsCount={this.state.fundsCount}
-                    account={this.state.account}
-                    addFunds={this.addFunds} />} />
+                <Route path="AddFunds" element={<AddFundsWrapper
+                  fundsCount={this.state.fundsCount}
+                  account={this.state.account}
+                  addFunds={this.addFunds} />} />
               </Routes>
             </BrowserRouter>
-        }       
+        }
         <Footer />
       </div>
     );
   }
+}
+
+const AddFundsWrapper = (props) => {
+  const navigate = useNavigate();
+  return <AddFunds {...props} navigate={navigate} />;
 }
 
 export default App;

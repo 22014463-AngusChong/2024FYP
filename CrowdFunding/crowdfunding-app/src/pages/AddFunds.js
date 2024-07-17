@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 class AddFunds extends Component {
   constructor(props) {
@@ -37,7 +36,7 @@ class AddFunds extends Component {
                     const desc = this.fundsDesc.value;
 
                     try {
-                      await this.props.addFunds(name, picName, goal, donated, desc);
+                      await this.props.addFunds(name, picName, goal, donated, desc, this.props.navigate);
                       this.setState({ message: 'Campaign added successfully!' });
                     } catch (error) {
                       console.error('Error adding campaign:', error);
