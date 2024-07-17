@@ -45,7 +45,7 @@ class Main extends Component {
         const { showModal, activeFundId, donationAmounts, errorMessage } = this.state;
 
         return (
-            <div className="container text-center">
+            <div className="container-fluid text-center main-container">
                 <h1 className="mt-4">Welcome!</h1>
                 <h4>Account: {account}</h4>
 
@@ -108,8 +108,14 @@ class Main extends Component {
                     </div>
                 )}
                 <style jsx>{`
-                    .container {
-                        margin-top: 20px;
+                    .main-container {
+                        margin-top: 1px; /* Adjust based on the height of your navbar */
+                        min-height: calc(120vh - 50px);
+                        background-image: url('/wallpaper.png');
+                        background-size: cover;
+                        background-position: center;
+                        background-repeat: no-repeat;
+                        padding: 20px;
                     }
                     h1, h2, h4 {
                         margin-bottom: 20px;
@@ -118,6 +124,7 @@ class Main extends Component {
                         border: 1px solid #ddd;
                         border-radius: 8px;
                         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        background-color: rgba(255, 255, 255, 0.8);
                     }
                     .card-header {
                         background-color: #f8f9fa;
@@ -209,5 +216,6 @@ class Main extends Component {
 }
 
 export default Main;
+
 
 
