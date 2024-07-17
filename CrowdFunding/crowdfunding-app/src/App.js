@@ -17,8 +17,6 @@ class App extends Component {
   }
 
   async loadWeb3() {
-    //loads the connection to the blockchain (ganache )
-    //window.web3 = new Web3("http://127.0.0.1:7545");
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum)
       await window.ethereum.enable()
@@ -30,7 +28,6 @@ class App extends Component {
        window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
    } 
   }
-
 
   async loadBlockchainData() {
     const web3 = window.web3;
@@ -70,7 +67,7 @@ class App extends Component {
       listOfFunds: [],        
     }
     this.addFunds = this.addFunds.bind(this)
-    this.purchaseFund = this.purchaseFund.bind(this)
+    this.donateFund = this.donateFund.bind(this)
   }
 
   async addFunds(name, picName, price, goal, donated, desc) {      
@@ -87,8 +84,8 @@ class App extends Component {
       window.open("/");
   }
 
-  async purchaseFund(id, price) {
-    const output = await this.state.contractInfo.methods.purchaseFund(id).send({ from: this.state.account, value: price })
+  async donateFund(id, amount) {
+    const output = await this.state.contractInfo.methods.donateFund(id).send({ from: this.state.account, value: amount })
     .once('receipt', (receipt) => {
       console.log(receipt);
     })    
@@ -115,7 +112,7 @@ class App extends Component {
                     fundsCount={this.state.fundsCount}
                     account={this.state.account}
                     listOfFunds={this.state.listOfFunds}
-                    purchaseFund = {this.purchaseFund} />} />
+                    donateFund = {this.donateFund} />} />
 
                 <Route path="AddFunds" element={<AddFund
                     fundsCount={this.state.fundsCount}

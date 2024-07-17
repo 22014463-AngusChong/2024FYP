@@ -1,62 +1,82 @@
-import React, { Component } from 'react'; 
+import React, { Component } from 'react';
 
-class Main extends Component { 
-    render() { 
-        const { listOfFunds } = this.props; 
-        
-        return ( 
-            <div className="container text-center"> 
-                <h1 className="mt-4">Welcome!</h1> 
-                <h4>Account: {this.props.account}</h4> 
-                 
-                <hr /> 
-                <br /> 
-                <div id="fundsRow" className="row"> 
-                    {listOfFunds.map((fund, key) => {   
-                        const goalInEther = window.web3.utils.fromWei(fund.goal.toString(), 'ether');
-                        const donatedInEther = window.web3.utils.fromWei(fund.donated.toString(), 'ether');
+class Main extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            donationAmounts: {}
+        };
+    }
+
+    handleDonationChange = (fundId, event) => {
+        const donationAmounts = { ...this.state.donationAmounts };
+        donationAmounts[fundId] = event.target.value;
+        this.setState({ donationAmounts });
+    }
+
+    handleDonate = (fundId) => {
+        const amountInWei = window.web3.utils.toWei(this.state.donationAmounts[fundId], 'ether');
+        this.props.donateFund(fundId, amountInWei);
+    }
+
+    render() {
+        const { listOfFunds } = this.props;
+
+        return (
+            <div className="container text-center">
+                <h1 className="mt-4">Welcome!</h1>
+                <h4>Account: {this.props.account}</h4>
+
+                <hr />
+                <br />
+                <div id="fundsRow" className="row">
+                    {listOfFunds.map((fund, key) => {
+                        const goalInEther = fund.goal ? window.web3.utils.fromWei(fund.goal.toString(), 'ether') : '0';
+                        const donatedInEther = fund.donated ? window.web3.utils.fromWei(fund.donated.toString(), 'ether') : '0';
                         const progress = (donatedInEther / goalInEther) * 100;
-                        
-                        return (                                    
-                            <div key={key} className="col-sm-6 col-md-4 col-lg-3 mb-4"> 
-                                <div className="card h-100"> 
-                                    <div className="card-header"> 
-                                        <h2>{fund.fundId}</h2> 
-                                        <h3 className="panel-title">{fund.name}</h3> 
-                                    </div> 
-                                    <div className="card-body"> 
-                                        <img alt="140x140" width="200" className="img-fluid img-center" src={fund.picName} /> 
-                                        <br /><br /> 
-                                        <strong>Fund Price</strong>: <span className="fund-location">{window.web3.utils.fromWei(fund.price.toString(), 'ether') + " ETH"}</span><br /><br /> 
-                                        <strong>Campaign Owner</strong>: <span className="fund-owner">{fund.ownerId}</span><br /><br /> 
-                                        <strong>Campaign Description</strong>: <span className="fund-owner">{fund.desc}</span><br /><br /> 
-                                        <strong>Campaign Status</strong>: <span className="fund-status">{JSON.parse(fund.status) ? 'Ongoing' : 'Ended'}</span><br /><br /> 
-                                        <strong>Campaign Goal</strong>: <span className="fund-goal">{goalInEther + " ETH"}</span><br /><br />
-                                        <strong>Funds Donated</strong>: <span className="fund-donated">{donatedInEther + " ETH"}</span><br /><br /> 
 
+                        return (
+                            <div key={key} className="col-sm-6 col-md-4 col-lg-3 mb-4">
+                                <div className="card h-100">
+                                    <div className="card-header">
+                                        <h2>{fund.fundId}</h2>
+                                        <h3 className="panel-title">{fund.name}</h3>
+                                    </div>
+                                    <div className="card-body">
+                                        <img alt="140x140" width="200" className="img-fluid img-center" src={fund.picName} />
+                                        <br /><br />
+                                        <strong>Campaign Owner</strong>: <span className="fund-owner">{fund.ownerId}</span><br /><br />
+                                        <strong>Campaign Description</strong>: <span className="fund-owner">{fund.desc}</span><br /><br />
+                                        <strong>Campaign Status</strong>: <span className="fund-status">{JSON.parse(fund.status) ? 'Ongoing' : 'Ended'}</span><br /><br />
+                                        <strong>Campaign Goal</strong>: <span className="fund-goal">{goalInEther + " ETH"}</span><br /><br />
+                                        <strong>Funds Donated</strong>: <span className="fund-donated">{donatedInEther + " ETH"}</span><br /><br />
+                                        <div>
+                                            <input
+                                                type="text"
+                                                placeholder="Enter donation amount"
+                                                value={this.state.donationAmounts[fund.fundId] || ''}
+                                                onChange={(event) => this.handleDonationChange(fund.fundId, event)}
+                                            />
+                                        </div>
+                                        <br />
                                         <strong>Donation Progress</strong>: <br />
-                                        <progress value={progress} max="100" className="progress-bar"></progress><br /><br /> 
+                                        <progress value={progress} max="100" className="progress-bar"></progress><br />
 
                                         <strong>
-                                            {  
-                                                JSON.parse(fund.status) ? 
-                                                    <button className="btn btn-primary buyButton" 
-                                                            name={fund.fundId} 
-                                                            value={fund.price} 
-                                                            onClick={(event) => { 
-                                                                console.log("buy clicked") 
-                                                                this.props.purchaseFund(event.target.name, event.target.value) 
-                                                            }} 
-                                                    >Donate</button> 
-                                                : <p>Thank you</p>                                       
-                                            } 
-                                        </strong> 
-                                    </div> 
-                                </div> 
-                            </div> 
-                        ) 
-                    })} 
-                </div> 
+                                            {
+                                                JSON.parse(fund.status) ?
+                                                    <button className="btn btn-primary buyButton"
+                                                            onClick={() => this.handleDonate(fund.fundId)}
+                                                    >Donate</button>
+                                                    : <p>Thank you</p>
+                                            }
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
                 <style jsx>{`
                     .container {
                         margin-top: 20px;
@@ -111,10 +131,11 @@ class Main extends Component {
                         border-radius: 8px;
                     }
                 `}</style>
-            </div> 
-        ) 
-    } 
-} 
+            </div>
+        )
+    }
+}
 
 export default Main;
+
 
