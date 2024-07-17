@@ -38,7 +38,7 @@ const AboutUs = () => {
     return (
         <div style={aboutUsStyle}>
             <h1 style={headerStyle}>Welcome to our Decentralized Crowdfunding Platform</h1>
-            <img src="crowdfunding.jpg" alt="Crowdfunding" style={imageStyle} />
+            <img src="Picture.png" alt="Crowdfunding" style={imageStyle} />
             <p style={paragraphStyle}>
                 Our mission is to empower creators and backers by providing a transparent, secure, and inclusive space to fund and support visionary projects.
                 Utilizing cutting-edge decentralized technology, we eliminate intermediaries, ensuring that your contributions reach their destination efficiently and with full accountability.

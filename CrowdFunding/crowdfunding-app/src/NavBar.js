@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 class NavBar extends Component {
     render() {
         return (
-            <nav className="navbar navbar-expand-lg navbar-light" style={{ backgroundColor: 'lightgreen' }}>
+            <nav className="navbar navbar-expand-lg navbar-light" style={{ backgroundColor: 'lightgrey' }}>
                 <div className="container d-flex justify-content-between align-items-center">
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
@@ -21,7 +21,7 @@ class NavBar extends Component {
                             </li>
                             <div className="nav-item logo">
                         <a href="/">
-                                <img src="logo-crowdfunding.png" width="200" height="200" alt="Logo" />
+                                <img src="Logo2.png" width="200" height="200" alt="Logo" />
                             </a>
                         </div>
                             <li className="nav-item dropdown"></li>

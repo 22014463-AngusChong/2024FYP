@@ -25,10 +25,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-right: auto; 
 }
-@media (max-width: 767px) {
-  .navbar-brand {
-    justify-content: center; /* Center horizontally on small screens */
-    margin-right: auto; /* Ensure the logo is not pushed to the right */
-  }
-}
+
