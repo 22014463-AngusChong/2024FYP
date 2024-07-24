@@ -63,14 +63,23 @@ const AboutUs = () => {
             <div style={cardStyle}>
                 <h2>Why Choose Us?</h2>
                 <ul>
-                    <li>Decentralized Platform: No intermediaries.Donate to different funds with no worries.</li>
+                    <li>Decentralized Platform: No intermediaries. Donate to different funds with no worries.</li>
                     <li>Secure Transactions: We use Blockchain.</li>
                     <li>Global Reach: Connect with backers and creators worldwide.</li>
                     <li>Full Accountability: Transparent and trackable contributions. We are able to track history without any information being missed out.</li>
                 </ul>
+            </div>
+            <div style={cardStyle}>
+                <h2>Governance and Dispute Resolution</h2>
+                <p>
+                    We are committed to maintaining a fair and transparent platform. Our governance framework outlines clear rules and procedures for managing disputes and resolving issues effectively.
+                    In case of any conflicts or disagreements, our platform provides structured methods for mediation and resolution, ensuring that all parties are heard and treated equitably.
+                    Our goal is to foster trust and collaboration within our community, upholding the highest standards of fairness and accountability.
+                </p>
             </div>
         </div>
     );
 };
 
 export default AboutUs;
+

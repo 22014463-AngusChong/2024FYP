@@ -28,7 +28,7 @@ const ContactUs = () => {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+    <div className="contact-container">
       <div className="card shadow p-4 mb-5 bg-white rounded" style={{ maxWidth: '600px', width: '100%' }}>
         <h1 className="mb-4 text-center">Contact Us</h1>
         {notification && (
@@ -81,10 +81,46 @@ const ContactUs = () => {
           </div>
         </form>
       </div>
+      <style jsx>{`
+        .contact-container {
+          min-height: 100vh;
+          background-image: url('/wallpaper.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          padding: 20px;
+          margin-top: 0px; /* Adjust based on the height of the navbar */
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        h1 {
+          margin-bottom: 20px;
+        }
+        .card {
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          background-color: rgba(255, 255, 255, 0.9);
+        }
+        .form-label {
+          margin-bottom: 0.5rem;
+        }
+        .btn {
+          margin-top: 10px;
+        }
+        .alert {
+          margin-bottom: 20px;
+        }
+        .error {
+          color: red;
+        }
+      `}</style>
     </div>
   );
 };
 
 export default ContactUs;
+
 
 

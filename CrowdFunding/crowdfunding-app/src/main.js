@@ -189,16 +189,16 @@ class Main extends Component {
         )}
         <style jsx>{`
           .main-container {
-            margin-top: 1px; /* Adjust based on the height of your navbar */
+            margin-top: -20px; /* Adjust based on the height of the navbar */
             min-height: calc(120vh - 50px);
             background-image: url('/wallpaper.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            padding: 20px;
+            padding: -50px;
           }
           h1, h2, h4 {
-            margin-bottom: 20px;
+            margin-bottom: 0px;
           }
           .card {
             border: 1px solid #ddd;
