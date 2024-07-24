@@ -1,14 +1,70 @@
 import React, { Component } from 'react';
+import Web3 from 'web3';
 
 class Main extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      account: '',
+      username: '',
+      newUsername: '',
+      searchQuery: '',
       donationAmounts: {},
       showModal: false,
       activeFundId: null,
       errorMessage: ''
     };
+  }
+
+  async componentDidMount() {
+    await this.loadWeb3();
+    await this.loadAccount();
+  }
+
+  async loadWeb3() {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      await window.ethereum.enable();
+    } else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider);
+    } else {
+      window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!');
+    }
+  }
+
+  async loadAccount() {
+    const accounts = await window.web3.eth.getAccounts();
+    if (accounts.length > 0) {
+      this.setState({ account: accounts[0] });
+      this.loadUsername(accounts[0]);
+    }
+  }
+
+  loadUsername(account) {
+    const username = localStorage.getItem(`username_${account}`) || account;
+    this.setState({ username });
+  }
+
+  handleUsernameChange = (event) => {
+    this.setState({ newUsername: event.target.value });
+  }
+
+  saveUsername = () => {
+    const { account, newUsername } = this.state;
+    if (newUsername.trim()) {
+      localStorage.setItem(`username_${account}`, newUsername);
+      this.setState({ username: newUsername, newUsername: '' });
+      alert('Username saved!');
+    }
+  }
+
+  handleSearchChange = (event) => {
+    this.setState({ searchQuery: event.target.value });
+  }
+
+  getOwnerName(ownerAddress) {
+    const username = localStorage.getItem(`username_${ownerAddress}`);
+    return username || ownerAddress;
   }
 
   handleDonationChange = (event) => {
@@ -42,17 +98,41 @@ class Main extends Component {
 
   render() {
     const { listOfFunds, account } = this.props;
-    const { showModal, activeFundId, donationAmounts, errorMessage } = this.state;
+    const { showModal, activeFundId, donationAmounts, errorMessage, username, newUsername, searchQuery } = this.state;
+
+    const filteredFunds = listOfFunds.filter(fund =>
+      fund.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      fund.desc.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
       <div className="container-fluid text-center main-container">
         <h1 className="mt-4">Welcome!</h1>
         <h4>Account: {account}</h4>
-
+        <h4>Username: {username}</h4>
+        <div className="username-input-container">
+          <input
+            type="text"
+            value={newUsername}
+            onChange={this.handleUsernameChange}
+            placeholder="Enter new username"
+            className="form-control mb-2"
+          />
+          <button className="btn btn-success" onClick={this.saveUsername}>Save Username</button>
+        </div>
+        <div className="search-container">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={this.handleSearchChange}
+            placeholder="Search campaigns"
+            className="form-control mb-2"
+          />
+        </div>
         <hr />
         <br />
         <div id="fundsRow" className="row">
-          {listOfFunds.map((fund, key) => {
+          {filteredFunds.map((fund, key) => {
             const goalInEther = fund.goal ? window.web3.utils.fromWei(fund.goal.toString(), 'ether') : '0';
             const donatedInEther = fund.donated ? window.web3.utils.fromWei(fund.donated.toString(), 'ether') : '0';
             const progress = (donatedInEther / goalInEther) * 100;
@@ -67,8 +147,8 @@ class Main extends Component {
                   <div className="card-body">
                     <img alt="140x140" width="200" className="img-fluid img-center" src={fund.picName} />
                     <br /><br />
-                    <strong>Campaign Owner</strong>: <span className="fund-owner">{fund.ownerId}</span><br /><br />
-                    <strong>Campaign Description</strong>: <span className="fund-owner">{fund.desc}</span><br /><br />
+                    <strong>Campaign Owner</strong>: <span className="fund-owner">{this.getOwnerName(fund.ownerId)}</span><br /><br />
+                    <strong>Campaign Description</strong>: <span className="fund-desc">{fund.desc}</span><br /><br />
                     <strong>Campaign Status</strong>: <span className="fund-status">{JSON.parse(fund.status) ? 'Ongoing' : 'Ended'}</span><br /><br />
                     <strong>Campaign Goal</strong>: <span className="fund-goal">{goalInEther + " ETH"}</span><br /><br />
                     <strong>Funds Donated</strong>: <span className="fund-donated">{donatedInEther + " ETH"}</span><br /><br />
@@ -209,6 +289,17 @@ class Main extends Component {
             color: red;
             margin-top: 10px;
           }
+          .username-input-container, .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .form-control {
+            display: inline-block;
+            width: auto;
+            margin-right: 10px;
+          }
         `}</style>
       </div>
     )
@@ -216,5 +307,4 @@ class Main extends Component {
 }
 
 export default Main;
-
 
