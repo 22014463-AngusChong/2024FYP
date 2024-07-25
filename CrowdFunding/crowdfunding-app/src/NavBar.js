@@ -1,31 +1,37 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./pages/Layout";
 
 class NavBar extends Component {
     render() {
         return (
-            <nav className="navbar navbar-expand-lg navbar-light" style={{ backgroundColor: 'lightgrey' }}>
+            <nav className="navbar navbar-expand-lg navbar-light" style={{ backgroundColor: '#e0e0e0', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: '10px 20px' }}>
                 <div className="container">
+                    <a className="navbar-brand mx-auto" style={{ color: 'green', fontSize: '1.8em', fontWeight: 'bold' }} href="/">
+                        GetFund
+                    </a>
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
                     <div className="collapse navbar-collapse" id="navbarNav">
-                        <ul className="navbar-nav w-100 d-flex justify-content-between">
-                            <li className="nav-item flex-grow-1 text-center">
-                                <a className="nav-link active" style={{ color: 'black' }} href="/">Home</a>
+                        <ul className="navbar-nav ms-auto">
+                            <li className="nav-item">
+                                <a className="nav-link" style={{ color: '#333', fontSize: '1.2em' }} href="/">
+                                    &#x1F3E0; Home
+                                </a>
                             </li>
-                            <li className="nav-item flex-grow-1 text-center">
-                                <a className="nav-link active" style={{ color: 'black' }} href="/AddFunds">Add Funds</a>
+                            <li className="nav-item">
+                                <a className="nav-link" style={{ color: '#333', fontSize: '1.2em' }} href="/AddCampaign">
+                                    &#x1F4B5; Add Campaign
+                                </a>
                             </li>
-                            <li className="nav-item flex-grow-1 text-center">
-                                <a className="nav-link active" style={{ color: 'green', textDecoration: 'none', fontSize: '1.5em', fontWeight: 'bold' }}>GetFund</a>
+                            <li className="nav-item">
+                                <a className="nav-link" style={{ color: '#333', fontSize: '1.2em' }} href="/AboutUs">
+                                    &#x1F465; About Us
+                                </a>
                             </li>
-                            <li className="nav-item flex-grow-1 text-center">
-                                <a className="nav-link active" style={{ color: 'black' }} href="/AboutUs">About Us</a>
-                            </li>
-                            <li className="nav-item flex-grow-1 text-center">
-                                <a className="nav-link active" style={{ color: 'black' }} href="/ContactUs">Contact Us</a>
+                            <li className="nav-item">
+                                <a className="nav-link" style={{ color: '#333', fontSize: '1.2em' }} href="/ContactUs">
+                                    &#x1F4E9; Contact Us
+                                </a>
                             </li>
                         </ul>
                     </div>

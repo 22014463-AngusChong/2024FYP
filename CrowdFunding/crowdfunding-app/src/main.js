@@ -106,70 +106,58 @@ class Main extends Component {
     );
 
     return (
-      <div className="container-fluid text-center main-container">
-        <h1 className="mt-4">Welcome!</h1>
-        <h4>Account: {account}</h4>
-        <h4>Username: {username}</h4>
-        <div className="username-input-container">
-          <input
-            type="text"
-            value={newUsername}
-            onChange={this.handleUsernameChange}
-            placeholder="Enter new username"
-            className="form-control mb-2"
-          />
-          <button className="btn btn-success" onClick={this.saveUsername}>Save Username</button>
-        </div>
-        <div className="search-container">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={this.handleSearchChange}
-            placeholder="Search campaigns"
-            className="form-control mb-2"
-          />
-        </div>
-        <hr />
-        <br />
-        <div id="fundsRow" className="row">
-          {filteredFunds.map((fund, key) => {
-            const goalInEther = fund.goal ? window.web3.utils.fromWei(fund.goal.toString(), 'ether') : '0';
-            const donatedInEther = fund.donated ? window.web3.utils.fromWei(fund.donated.toString(), 'ether') : '0';
-            const progress = (donatedInEther / goalInEther) * 100;
+      <div className="main-content">
+        <div className="container">
+          <div className="info">
+            <span>Account: {account}</span>
+            <span>Username: {username}</span>
+          </div>
+          <div className="username-input">
+            <input
+              type="text"
+              value={newUsername}
+              onChange={this.handleUsernameChange}
+              placeholder="Enter new username"
+            />
+            <button className="btn save-username-btn" onClick={this.saveUsername}>Save Username</button>
+          </div>
+          <div className="search">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={this.handleSearchChange}
+              placeholder="Search campaigns"
+            />
+          </div>
+          <div className="funds">
+            {filteredFunds.map((fund, key) => {
+              const goalInEther = fund.goal ? window.web3.utils.fromWei(fund.goal.toString(), 'ether') : '0';
+              const donatedInEther = fund.donated ? window.web3.utils.fromWei(fund.donated.toString(), 'ether') : '0';
+              const progress = (donatedInEther / goalInEther) * 100;
 
-            return (
-              <div key={key} className="col-sm-6 col-md-4 col-lg-3 mb-4">
-                <div className="card h-100">
-                  <div className="card-header">
-                    <h2>{fund.fundId}</h2>
-                    <h3 className="panel-title">{fund.name}</h3>
+              return (
+                <div key={key} className="fund-card">
+                  <div className="fund-header">
+                    <img src={fund.picName} alt={fund.name} />
+                    <h2>{fund.name}</h2>
                   </div>
-                  <div className="card-body">
-                    <img alt="140x140" width="200" className="img-fluid img-center" src={fund.picName} />
-                    <br /><br />
-                    <strong>Campaign Owner</strong>: <span className="fund-owner">{this.getOwnerName(fund.ownerId)}</span><br /><br />
-                    <strong>Campaign Description</strong>: <span className="fund-desc">{fund.desc}</span><br /><br />
-                    <strong>Campaign Status</strong>: <span className="fund-status">{JSON.parse(fund.status) ? 'Ongoing' : 'Ended'}</span><br /><br />
-                    <strong>Campaign Goal</strong>: <span className="fund-goal">{goalInEther + " ETH"}</span><br /><br />
-                    <strong>Funds Donated</strong>: <span className="fund-donated">{donatedInEther + " ETH"}</span><br /><br />
-                    <strong>Donation Progress</strong>: <br />
-                    <progress value={progress} max="100" className="progress-bar"></progress><br />
-                    <strong>
-                      {JSON.parse(fund.status) ?
-                        <button
-                          className="btn btn-primary buyButton"
-                          onClick={() => this.handleShowModal(fund.fundId)}
-                        >
-                          Donate
-                        </button>
-                        : <p>Thank you</p>
-                      }
-                    </strong>
+                  <div className="fund-body">
+                    <p><strong>Description:</strong> {fund.desc}</p>
+                    <p><strong>Campaign Owner:</strong> {this.getOwnerName(fund.ownerId)}</p>
+                    <p><strong>Goal:</strong> {goalInEther} ETH</p>
+                    <p><strong>Donated:</strong> {donatedInEther} ETH</p>
+                    <p><strong>Status:</strong> {JSON.parse(fund.status) ? 'Ongoing' : 'Ended'}</p>
+                    <div className="progress-bar">
+                      <div className="progress" style={{ width: `${progress}%` }}></div>
+                    </div>
+                    {JSON.parse(fund.status) && (
+                      <button className="btn donate-btn" onClick={() => this.handleShowModal(fund.fundId)}>Donate</button>
+                    )}
                   </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
         {showModal && (
           <div className="modal">
@@ -183,69 +171,130 @@ class Main extends Component {
                 onChange={this.handleDonationChange}
               />
               {errorMessage && <p className="error">{errorMessage}</p>}
-              <button className="btn btn-primary" onClick={this.handleDonate}>Donate</button>
+              <button className="btn donate-btn" onClick={this.handleDonate}>Donate</button>
             </div>
           </div>
         )}
         <style jsx>{`
-          .main-container {
-            margin-top: -20px; /* Adjust based on the height of the navbar */
-            min-height: calc(120vh - 50px);
+          body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          }
+          .main-content {
+            min-height: 100vh;
             background-image: url('/wallpaper.png');
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
-            padding: -50px;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
           }
-          h1, h2, h4 {
-            margin-bottom: 0px;
+          .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
           }
-          .card {
+          .info {
+            display: flex;
+            flex-direction: column; /* Make it a column layout */
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+          }
+          .info span {
+            margin-bottom: 10px; /* Space between account and username */
+          }
+          .username-input, .search {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+          }
+          .username-input input, .search input {
+            margin-right: 10px;
+            font-size: 1.1em;
+            width: 250px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+          }
+          .funds {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+          }
+          .fund-card {
+            background: #f9f9f9;
             border: 1px solid #ddd;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            background-color: rgba(255, 255, 255, 0.8);
-          }
-          .card-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #ddd;
             padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            width: calc(33.333% - 20px);
+            transition: box-shadow 0.3s ease;
           }
-          .card-body {
-            padding: 20px;
+          .fund-card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
           }
-          .img-center {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-          }
-          .buyButton {
+          .fund-header img {
             width: 100%;
+            height: auto;
+            border-radius: 5px;
           }
-          .text-center {
+          .fund-header h2 {
+            margin: 10px 0;
+            font-size: 1.5em;
             text-align: center;
+            color: #333;
           }
-          .mt-4 {
-            margin-top: 1.5rem !important;
+          .fund-body {
+            padding: 10px 0;
+            flex-grow: 1;
+            font-size: 1.1em;
+            color: #555;
+          }
+          .fund-body p {
+            margin: 0 0 10px;
           }
           .progress-bar {
-            width: 100%;
-            height: 20px;
-            -webkit-appearance: none;
-            appearance: none;
+            background: #e9e9e9;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
           }
-          .progress-bar::-webkit-progress-bar {
-            background-color: #f3f3f3;
-            border-radius: 8px;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+          .progress-bar .progress {
+            height: 10px;
+            background: #4caf50;
           }
-          .progress-bar::-webkit-progress-value {
-            background-color: #4caf50;
-            border-radius: 8px;
+          .btn {
+            cursor: pointer;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
           }
-          .progress-bar::-moz-progress-bar {
-            background-color: #4caf50;
-            border-radius: 8px;
+          .save-username-btn {
+            background-color: #007bff;
+            color: white;
+          }
+          .save-username-btn:hover {
+            background-color: #0056b3;
+          }
+          .donate-btn {
+            background-color: #28a745;
+            color: white;
+          }
+          .donate-btn:hover {
+            background-color: #218838;
           }
           .modal {
             display: block;
@@ -256,11 +305,10 @@ class Main extends Component {
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgb(0,0,0);
             background-color: rgba(0,0,0,0.4);
           }
           .modal-content {
-            background-color: #fefefe;
+            background-color: #fff;
             margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
@@ -268,37 +316,21 @@ class Main extends Component {
             max-width: 500px;
             text-align: center;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            font-size: 1.2em;
           }
           .close {
             color: #aaa;
             float: right;
-            font-size: 28px;
+            font-size: 1.5em;
             font-weight: bold;
           }
-          .close:hover,
-          .close:focus {
+          .close:hover, .close:focus {
             color: black;
             text-decoration: none;
             cursor: pointer;
           }
-          .btn {
-            margin-top: 10px;
-          }
           .error {
             color: red;
-            margin-top: 10px;
-          }
-          .username-input-container, .search-container {
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-          .form-control {
-            display: inline-block;
-            width: auto;
-            margin-right: 10px;
           }
         `}</style>
       </div>
@@ -307,4 +339,5 @@ class Main extends Component {
 }
 
 export default Main;
+
 
