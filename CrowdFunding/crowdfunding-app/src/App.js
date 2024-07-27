@@ -68,6 +68,7 @@ class App extends Component {
     };
     this.addFunds = this.addFunds.bind(this);
     this.donateFund = this.donateFund.bind(this);
+    this.getDonationHistory = this.getDonationHistory.bind(this);
   }
 
   async addFunds(name, picName, goal, donated, desc, navigate) {
@@ -82,15 +83,15 @@ class App extends Component {
     console.log(output);
     console.log(data);
 
-    // Fetch the newly added campaign
+    
     const newCampaignId = await this.state.contractInfo.methods.getNoOfFunds().call();
-    const newCampaign = await this.state.contractInfo.methods.listOfFunds(newCampaignId).call();
+    const newCampaign = await this.state.contractInfo.methods.listOfFunds(newCampaignId).call(); 
     this.setState({
       listOfFunds: [...this.state.listOfFunds, newCampaign],
       fundsCount: newCampaignId
     });
 
-    navigate("/");  // Use the navigate function to redirect to the main page
+    navigate("/");  
   }
 
   async donateFund(id, amount) {
@@ -100,6 +101,12 @@ class App extends Component {
       });
     console.log(output);
     window.location.assign("/");
+  }
+
+  async getDonationHistory(id) {
+    const donations = await this.state.contractInfo.methods.getDonationHistory(id).call();
+    console.log(donations);
+    return donations;
   }
 
   render() {
@@ -121,7 +128,8 @@ class App extends Component {
                   fundsCount={this.state.fundsCount}
                   account={this.state.account}
                   listOfFunds={this.state.listOfFunds}
-                  donateFund={this.donateFund} />} />
+                  donateFund={this.donateFund}
+                  getDonationHistory={this.getDonationHistory} />} />
 
                 <Route path="AddFunds" element={<AddFundsWrapper
                   fundsCount={this.state.fundsCount}

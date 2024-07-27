@@ -30,7 +30,6 @@ class AddFunds extends Component {
             <div className="col-lg-6">
               <div className="card shadow-sm p-4 bg-white rounded" style={{ width: '100%' }}>
                 <h1 className="mb-4 text-center text-success">Create Your Campaign</h1>
-                <p className="text-center text-muted">Total Campaigns: {this.props.fundsCount}</p>
                 {message && (
                   <div className={`alert ${message.includes('Error') ? 'alert-danger' : 'alert-success'}`} role="alert">
                     {message}
