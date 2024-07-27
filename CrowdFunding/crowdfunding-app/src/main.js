@@ -12,7 +12,9 @@ class Main extends Component {
       donationAmounts: {},
       showModal: false,
       activeFundId: null,
-      errorMessage: ''
+      errorMessage: '',
+      showDonationHistoryModal: false, 
+      donationHistory: [] 
     };
   }
 
@@ -96,9 +98,18 @@ class Main extends Component {
     this.setState({ showModal: false, activeFundId: null, errorMessage: '' });
   }
 
+  handleShowDonationHistory = async (fundId) => {
+    const donationHistory = await this.props.getDonationHistory(fundId);
+    this.setState({ showDonationHistoryModal: true, donationHistory, activeFundId: fundId });
+  }
+
+  handleCloseDonationHistoryModal = () => {
+    this.setState({ showDonationHistoryModal: false, activeFundId: null });
+  }
+
   render() {
     const { listOfFunds, account } = this.props;
-    const { showModal, activeFundId, donationAmounts, errorMessage, username, newUsername, searchQuery } = this.state;
+    const { showModal, activeFundId, donationAmounts, errorMessage, username, newUsername, searchQuery, showDonationHistoryModal, donationHistory } = this.state;
 
     const filteredFunds = listOfFunds.filter(fund =>
       fund.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -153,6 +164,7 @@ class Main extends Component {
                     {JSON.parse(fund.status) && (
                       <button className="btn donate-btn" onClick={() => this.handleShowModal(fund.fundId)}>Donate</button>
                     )}
+                    <button className="btn donation-history-btn" onClick={() => this.handleShowDonationHistory(fund.fundId)}>Donation History</button>
                   </div>
                 </div>
               )
@@ -175,58 +187,37 @@ class Main extends Component {
             </div>
           </div>
         )}
+        {showDonationHistoryModal && (
+          <div className="modal">
+            <div className="modal-content">
+              <span className="close" onClick={this.handleCloseDonationHistoryModal}>&times;</span>
+              <h2>Donation History</h2>
+              <ul className="donation-history">
+                {donationHistory.map((donation, index) => (
+                  <li key={index}>
+                    <span>{this.getOwnerName(donation.donor)}</span>: <span>{window.web3.utils.fromWei(donation.amount, 'ether')} ETH</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
         <style jsx>{`
-          body, html {
-            height: 100%;
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          }
           .main-content {
-            min-height: 100vh;
-            background-image: url('/wallpaper.png');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding-top: 50px;
-          }
-          .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 10px;
           }
           .info {
             display: flex;
-            flex-direction: column; /* Make it a column layout */
-            align-items: center;
+            justify-content: space-between;
             margin-bottom: 20px;
-            font-size: 1.4em;
-          }
-          .info span {
-            margin-bottom: 10px; /* Space between account and username */
           }
           .username-input, .search {
-            display: flex;
-            justify-content: center;
             margin-bottom: 20px;
-          }
-          .username-input input, .search input {
-            margin-right: 10px;
-            font-size: 1.1em;
-            width: 250px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
           }
           .funds {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 20px;
           }
           .fund-card {
             background: #f9f9f9;
@@ -296,6 +287,14 @@ class Main extends Component {
           .donate-btn:hover {
             background-color: #218838;
           }
+          .donation-history-btn {
+            background-color: #17a2b8;
+            color: white;
+            margin-left: 10px;
+          }
+          .donation-history-btn:hover {
+            background-color: #117a8b;
+          }
           .modal {
             display: block;
             position: fixed;
@@ -332,12 +331,19 @@ class Main extends Component {
           .error {
             color: red;
           }
+          .donation-history {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+          }
+          .donation-history li {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+          }
         `}</style>
       </div>
-    )
+    );
   }
 }
 
 export default Main;
-
-

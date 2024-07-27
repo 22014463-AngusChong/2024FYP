@@ -19,7 +19,7 @@ class NavBar extends Component {
                                 </a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" style={{ color: '#333', fontSize: '1.2em' }} href="/AddCampaign">
+                                <a className="nav-link" style={{ color: '#333', fontSize: '1.2em' }} href="/AddFunds">
                                     &#x1F4B5; Add Campaign
                                 </a>
                             </li>
