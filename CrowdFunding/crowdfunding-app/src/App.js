@@ -11,6 +11,8 @@ import Main from './Main';
 import AddFunds from './pages/AddFunds';
 import MemberClub from './pages/MemberClub';
 import Campaigns from './pages/Campaigns';
+import MemberClub from './pages/MemberClub';
+import Campaigns from './pages/Campaigns';
 
 class App extends Component {
   async componentWillMount() {

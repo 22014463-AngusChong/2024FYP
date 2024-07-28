@@ -126,7 +126,7 @@ class Main extends Component {
     );
 
     return (
-      <div className="main-content">
+      <div className="main-content" style={backgroundStyle}>
         <div className="container">
           <div className="info">
             <span>Account: {account}</span>
@@ -356,3 +356,4 @@ class Main extends Component {
 }
 
 export default Main;
+
