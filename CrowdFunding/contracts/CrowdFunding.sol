@@ -54,6 +54,7 @@ contract CrowdFunding {
 
     mapping(uint => FundDetails) public listOfFunds;
     mapping(uint => Donation[]) public fundDonations;
+    mapping (address => uint) public userDonations;
 
     // Event to add a fund
     event FundCreated(
@@ -134,5 +135,28 @@ contract CrowdFunding {
     function getDonationHistory(uint _id) public view returns (Donation[] memory) {
         require(_id <= fundsCount, "Invalid fund ID");
         return fundDonations[_id];
+    }
+
+    // New function to get user rating based on total donations
+    function getUserRating(address _user) public view returns (uint) {
+        uint totalDonated = userDonations[_user];
+
+        if (totalDonated >= 10 ether) return 5; // Platinum
+        if (totalDonated >= 5 ether) return 4;  // Gold
+        if (totalDonated >= 1 ether) return 3;  // Silver
+        if (totalDonated >= 0.5 ether) return 2; // Bronze
+        return 1; // classic 
+    }
+
+    // New function to get campaign star rating based on progress
+    function getCampaignStars(uint _campaignId) public view returns (uint) {
+        FundDetails storage campaign = listOfFunds[_campaignId];
+        uint percentage = (campaign.donated * 100) / campaign.goal;
+
+        if (percentage >= 100) return 5;
+        if (percentage >= 75) return 4;
+        if (percentage >= 50) return 3;
+        if (percentage >= 25) return 2;
+        return 1;
     }
 }

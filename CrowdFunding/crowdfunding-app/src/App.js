@@ -9,6 +9,8 @@ import ContactUs from "./pages/ContactUs";
 import CrowdFunding from './build/CrowdFunding.json';
 import Main from './Main';
 import AddFunds from './pages/AddFunds';
+import MemberClub from './pages/MemberClub';
+import Campaigns from './pages/Campaigns';
 
 class App extends Component {
   async componentWillMount() {
@@ -133,6 +135,14 @@ class App extends Component {
                   fundsCount={this.state.fundsCount}
                   account={this.state.account}
                   addFunds={this.addFunds} />} />
+
+                <Route path="MemberClub" element={<MemberClub
+                  account={this.state.account}
+                  contract={this.state.contractInfo} />} />
+
+                <Route path="Campaigns" element={<Campaigns
+                  account={this.state.account}
+                  contract={this.state.contractInfo} />} />
               </Routes>
             </BrowserRouter>
         }

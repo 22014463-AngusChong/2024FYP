@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
 
+const backgroundStyle = {
+  backgroundImage: `url('wallpaper.png')`,
+  backgroundSize: 'cover', // Cover the entire screen
+   // Center the image
+  backgroundRepeat: 'no-repeat', // No repeat
+  minHeight: '30vh', // Full viewport height
+  paddingTop: '78px', // Space for the navbar if needed
+};
+
 class Main extends Component {
   constructor(props) {
     super(props);
