@@ -1,15 +1,6 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
 
-const backgroundStyle = {
-  backgroundImage: `url('wallpaper.png')`,
-  backgroundSize: 'cover', // Cover the entire screen
-   // Center the image
-  backgroundRepeat: 'no-repeat', // No repeat
-  minHeight: '30vh', // Full viewport height
-  paddingTop: '78px', // Space for the navbar if needed
-};
-
 class Main extends Component {
   constructor(props) {
     super(props);
@@ -126,7 +117,7 @@ class Main extends Component {
     );
 
     return (
-      <div className="main-content" style={backgroundStyle}>
+      <div className="main-content">
         <div className="container">
           <div className="info">
             <span>Account: {account}</span>
@@ -170,9 +161,15 @@ class Main extends Component {
                     <div className="progress-bar">
                       <div className="progress" style={{ width: `${progress}%` }}></div>
                     </div>
-                    {JSON.parse(fund.status) && (
-                      <button className="btn donate-btn" onClick={() => this.handleShowModal(fund.fundId)}>Donate</button>
-                    )}
+                    {JSON.parse(fund.status) ?
+                        <button
+                          className="btn btn-primary buyButton"
+                          onClick={() => this.handleShowModal(fund.fundId)}
+                        >
+                          Donate
+                        </button>
+                        : <p>Thank you</p>
+                      }
                     <button className="btn donation-history-btn" onClick={() => this.handleShowDonationHistory(fund.fundId)}>Donation History</button>
                   </div>
                 </div>
@@ -212,21 +209,49 @@ class Main extends Component {
           </div>
         )}
         <style jsx>{`
+          body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          }
           .main-content {
-            padding: 20px;
+            min-height: 100vh;
+            background-image: url('/wallpaper.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
           }
           .info {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column; /* Make it a column layout */
+            align-items: center;
             margin-bottom: 20px;
+            font-size: 1.4em;
+          }
+          .info span {
+            margin-bottom: 10px; /* Space between account and username */
           }
           .username-input, .search {
+            display: flex;
+            justify-content: center;
             margin-bottom: 20px;
+          }
+          .username-input input, .search input {
+            margin-right: 10px;
+            font-size: 1.1em;
+            width: 250px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
           }
           .funds {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 15px;
           }
           .fund-card {
             background: #f9f9f9;
@@ -237,7 +262,7 @@ class Main extends Component {
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            width: calc(33.333% - 20px);
+            width: calc(50% - 15px); /* Make the cards wider */
             transition: box-shadow 0.3s ease;
           }
           .fund-card:hover {
@@ -347,7 +372,7 @@ class Main extends Component {
           }
           .donation-history li {
             margin-bottom: 10px;
-            font-size: 1.1em;
+            font-size: 1em;
           }
         `}</style>
       </div>
@@ -356,4 +381,3 @@ class Main extends Component {
 }
 
 export default Main;
-
