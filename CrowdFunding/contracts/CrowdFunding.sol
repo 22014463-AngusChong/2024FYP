@@ -46,6 +46,11 @@ contract CrowdFunding {
         FundingStatus status;
     }
 
+    struct Donation {
+        address donor;
+        uint amount;
+    }
+
 
     mapping(uint => FundDetails) public listOfFunds;
     mapping(uint => Donation[]) public fundDonations;
@@ -102,9 +107,9 @@ contract CrowdFunding {
         require(seller != msg.sender, "Seller cannot donate own fund");
         fundsInfo.donated += msg.value;
         fundsInfo.donations.push(msg.value);
-        donations.push(donationinfo({
+        fundDonations[_id].push(Donation({
             donor: msg.sender,
-            amnt: msg.value
+            amount: msg.value
         }));
         userDonations[msg.sender] += msg.value;
         payable(seller).transfer(msg.value);
