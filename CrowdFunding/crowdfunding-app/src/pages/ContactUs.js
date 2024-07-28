@@ -20,11 +20,11 @@ const ContactUs = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Simulate email sending
+    
     setTimeout(() => {
       setNotification('Your email has been sent successfully!');
       setFormData({ name: '', email: '', message: '' });
-    }, 1000); // Simulate network delay
+    }, 1000); 
   };
 
   return (

@@ -9,14 +9,14 @@ class AddFunds extends Component {
   render() {
     const { message } = this.state;
 
-    // Inline styles for background
+    
     const backgroundStyle = {
       backgroundImage: `url('wallpaper.png')`,
-      backgroundSize: 'cover', // Cover the entire screen
-      backgroundPosition: 'center center', // Center the image
-      backgroundRepeat: 'no-repeat', // No repeat
-      minHeight: '100vh', // Full viewport height
-      paddingTop: '56px', // Space for the navbar if needed
+      backgroundSize: 'cover', 
+      backgroundPosition: 'center center', 
+      backgroundRepeat: 'no-repeat', 
+      minHeight: '100vh', 
+      paddingTop: '56px', 
     };
 
     return (

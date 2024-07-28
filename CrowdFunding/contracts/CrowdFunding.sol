@@ -11,7 +11,6 @@ contract CrowdFunding {
     uint public fundsEnded;
     uint public fundsOngoing;
 
-    // Constructor code is only run when the contract is created
     constructor() {
         fundsCount=0;
         currentFundStatus = FundingStatus.Ongoing;
@@ -19,7 +18,6 @@ contract CrowdFunding {
         owner = msg.sender;
     }
 
-    //function that sets the reading status to “Sold”.  
     function setFundSold() public {
         currentFundStatus = FundingStatus.Ended;
     }
@@ -28,12 +26,10 @@ contract CrowdFunding {
         return webName;
     }
 
-    //a function to retrieve the current availability of the fund.
     function getFundStatus() public view returns(FundingStatus) {
         return currentFundStatus;
     }
 
-    // Declaring a structure fundDetails
     struct FundDetails {
         uint fundId;
         string name;
@@ -56,7 +52,6 @@ contract CrowdFunding {
     mapping(uint => Donation[]) public fundDonations;
     mapping (address => uint) public userDonations;
 
-    //create the event to add Fund
     event FundCreated(
         uint fundId,
         string name,
@@ -68,13 +63,11 @@ contract CrowdFunding {
         FundingStatus status
     );
 
-    // Write a function addFund with the relevant function parameters
     function addFunds(string memory _name, string memory _picName,
         uint _goal, uint _donated, string memory _desc) public {
         incrementFundCount();
         uint[] memory empDonations;
         listOfFunds[fundsCount] = FundDetails(fundsCount, _name, _picName, _goal, _donated, _desc, empDonations, payable(msg.sender), FundingStatus.Ongoing);
-        //emit the event to addFund 
         emit FundCreated(fundsCount, _name, _picName, _goal, _donated, _desc, payable(msg.sender), FundingStatus.Ongoing);
     }
 
@@ -82,12 +75,11 @@ contract CrowdFunding {
         fundsCount += 1;
     }
 
-    // Write a function getNoOfFunds to obtain the fundsCount
     function getNoOfFunds() public view returns (uint) {
         return fundsCount;
     }
 
-    // Create the event to purchase the Fund
+   
     event FundDonated(
         uint id,
         string name,
@@ -119,13 +111,11 @@ contract CrowdFunding {
         emit FundDonated(fundsInfo.fundId, fundsInfo.name, msg.value, fundsInfo.goal, fundsInfo.donated, fundsInfo.desc, payable(msg.sender), fundsInfo.status);
     }
 
-    // Function to retrieve donation history for a specific fund
     function getDonationHistory(uint _id) public view returns (Donation[] memory) {
         require(_id <= fundsCount, "Invalid fund ID");
         return fundDonations[_id];
     }
 
-    // New function to get user rating based on total donations
     function getUserRating(address _user) public view returns (uint) {
         uint totalDonated = userDonations[_user];
 
@@ -136,7 +126,6 @@ contract CrowdFunding {
         return 1; // classic 
     }
 
-    // New function to get campaign star rating based on progress
     function getCampaignStars(uint _campaignId) public view returns (uint) {
         FundDetails storage campaign = listOfFunds[_campaignId];
         uint percentage = (campaign.donated * 100) / campaign.goal;

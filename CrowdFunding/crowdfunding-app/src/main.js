@@ -77,18 +77,25 @@ class Main extends Component {
   }
 
   handleDonate = () => {
-    const { activeFundId, donationAmounts } = this.state;
-    const amount = parseFloat(donationAmounts[activeFundId]);
+  const { activeFundId, donationAmounts } = this.state;
+  const amount = parseFloat(donationAmounts[activeFundId]);
 
-    if (amount <= 0) {
-      this.setState({ errorMessage: 'Donation amount must be greater than zero.' });
-      return;
-    }
-
-    const amountInWei = window.web3.utils.toWei(donationAmounts[activeFundId], 'ether');
-    this.props.donateFund(activeFundId, amountInWei);
-    this.setState({ showModal: false, activeFundId: null, errorMessage: '' });
+  if (amount <= 0) {
+    this.setState({ errorMessage: 'Donation amount must be greater than zero.' });
+    return;
   }
+
+  const amountInWei = window.web3.utils.toWei(donationAmounts[activeFundId], 'ether');
+  this.props.donateFund(activeFundId, amountInWei)
+    .then(() => {
+      alert('Thank you for donating!');
+      this.setState({ showModal: false, activeFundId: null, errorMessage: '' });
+    })
+    .catch((error) => {
+      this.setState({ errorMessage: 'An error occurred during the donation.' });
+    });
+}
+
 
   handleShowModal = (fundId) => {
     this.setState({ showModal: true, activeFundId: fundId, errorMessage: '' });
@@ -168,7 +175,8 @@ class Main extends Component {
                         >
                           Donate
                         </button>
-                        : <p>Thank you</p>
+                        : <p><strong>Thank you for your contribution!😊</strong></p>
+
                       }
                     <button className="btn donation-history-btn" onClick={() => this.handleShowDonationHistory(fund.fundId)}>Donation History</button>
                   </div>
@@ -227,13 +235,13 @@ class Main extends Component {
           }
           .info {
             display: flex;
-            flex-direction: column; /* Make it a column layout */
+            flex-direction: column; 
             align-items: center;
             margin-bottom: 20px;
             font-size: 1.4em;
           }
           .info span {
-            margin-bottom: 10px; /* Space between account and username */
+            margin-bottom: 10px; 
           }
           .username-input, .search {
             display: flex;
@@ -262,7 +270,7 @@ class Main extends Component {
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            width: calc(50% - 15px); /* Make the cards wider */
+            width: 422px; 
             transition: box-shadow 0.3s ease;
           }
           .fund-card:hover {
