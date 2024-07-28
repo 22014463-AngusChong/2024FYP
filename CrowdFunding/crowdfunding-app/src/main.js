@@ -13,8 +13,9 @@ class Main extends Component {
       showModal: false,
       activeFundId: null,
       errorMessage: '',
-      showDonationHistoryModal: false, 
-      donationHistory: [] 
+      showDonationHistoryModal: false,
+      donationHistory: [],
+      selectedCategory: 'all',
     };
   }
 
@@ -64,6 +65,10 @@ class Main extends Component {
     this.setState({ searchQuery: event.target.value });
   }
 
+  handleCategoryChange = (event) => {
+    this.setState({ selectedCategory: event.target.value });
+  }
+
   getOwnerName(ownerAddress) {
     const username = localStorage.getItem(`username_${ownerAddress}`);
     return username || ownerAddress;
@@ -77,25 +82,18 @@ class Main extends Component {
   }
 
   handleDonate = () => {
-  const { activeFundId, donationAmounts } = this.state;
-  const amount = parseFloat(donationAmounts[activeFundId]);
+    const { activeFundId, donationAmounts } = this.state;
+    const amount = parseFloat(donationAmounts[activeFundId]);
 
-  if (amount <= 0) {
-    this.setState({ errorMessage: 'Donation amount must be greater than zero.' });
-    return;
+    if (amount <= 0) {
+      this.setState({ errorMessage: 'Donation amount must be greater than zero.' });
+      return;
+    }
+
+    const amountInWei = window.web3.utils.toWei(donationAmounts[activeFundId], 'ether');
+    this.props.donateFund(activeFundId, amountInWei);
+    this.setState({ showModal: false, activeFundId: null, errorMessage: '' });
   }
-
-  const amountInWei = window.web3.utils.toWei(donationAmounts[activeFundId], 'ether');
-  this.props.donateFund(activeFundId, amountInWei)
-    .then(() => {
-      alert('Thank you for donating!');
-      this.setState({ showModal: false, activeFundId: null, errorMessage: '' });
-    })
-    .catch((error) => {
-      this.setState({ errorMessage: 'An error occurred during the donation.' });
-    });
-}
-
 
   handleShowModal = (fundId) => {
     this.setState({ showModal: true, activeFundId: fundId, errorMessage: '' });
@@ -114,14 +112,48 @@ class Main extends Component {
     this.setState({ showDonationHistoryModal: false, activeFundId: null });
   }
 
-  render() {
-    const { listOfFunds, account } = this.props;
-    const { showModal, activeFundId, donationAmounts, errorMessage, username, newUsername, searchQuery, showDonationHistoryModal, donationHistory } = this.state;
+  filterFunds() {
+    const { listOfFunds } = this.props;
+    const { searchQuery, selectedCategory } = this.state;
 
-    const filteredFunds = listOfFunds.filter(fund =>
+    let filteredFunds = listOfFunds.filter(fund =>
       fund.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       fund.desc.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    switch (selectedCategory) {
+      case 'close-to-goal':
+        filteredFunds = filteredFunds.filter(fund => {
+          const goalInEther = parseFloat(window.web3.utils.fromWei(fund.goal.toString(), 'ether'));
+          const donatedInEther = parseFloat(window.web3.utils.fromWei(fund.donated.toString(), 'ether'));
+          return (donatedInEther / goalInEther) >= 0.60;
+        });
+        break;
+      case 'just-launched':
+        filteredFunds = filteredFunds.filter(fund => {
+          const donatedInEther = parseFloat(window.web3.utils.fromWei(fund.donated.toString(), 'ether'));
+          return donatedInEther === 0;
+        });
+        break;
+        case 'needs-momentum':
+          filteredFunds = filteredFunds.filter(fund => {
+            const goalInEther = parseFloat(window.web3.utils.fromWei(fund.goal.toString(), 'ether'));
+            const donatedInEther = parseFloat(window.web3.utils.fromWei(fund.donated.toString(), 'ether'));
+            return donatedInEther > 0 && (donatedInEther / goalInEther) <= 0.5;
+        });
+        break;
+      default:
+        break;
+    }
+
+    return filteredFunds;
+  }
+
+  render() {
+    const { account } = this.props;
+    const { showModal, activeFundId, donationAmounts, errorMessage, username, newUsername, searchQuery, showDonationHistoryModal, donationHistory, selectedCategory } = this.state;
+
+    const filteredFunds = this.filterFunds();
 
     return (
       <div className="main-content">
@@ -147,6 +179,14 @@ class Main extends Component {
               placeholder="Search campaigns"
             />
           </div>
+          <div className="category-dropdown">
+            <select value={selectedCategory} onChange={this.handleCategoryChange}>
+              <option value="all">All</option>
+              <option value="close-to-goal">Close to goal</option>
+              <option value="just-launched">Just launched</option>
+              <option value="needs-momentum">Needs momentum</option>
+            </select>
+          </div>
           <div className="funds">
             {filteredFunds.map((fund, key) => {
               const goalInEther = fund.goal ? window.web3.utils.fromWei(fund.goal.toString(), 'ether') : '0';
@@ -169,15 +209,14 @@ class Main extends Component {
                       <div className="progress" style={{ width: `${progress}%` }}></div>
                     </div>
                     {JSON.parse(fund.status) ?
-                        <button
-                          className="btn btn-primary buyButton"
-                          onClick={() => this.handleShowModal(fund.fundId)}
-                        >
-                          Donate
-                        </button>
-                        : <p><strong>Thank you for your contribution!😊</strong></p>
-
-                      }
+                      <button
+                        className="btn btn-primary buyButton"
+                        onClick={() => this.handleShowModal(fund.fundId)}
+                      >
+                        Donate
+                      </button>
+                      : <p>Thank you</p>
+                    }
                     <button className="btn donation-history-btn" onClick={() => this.handleShowDonationHistory(fund.fundId)}>Donation History</button>
                   </div>
                 </div>
@@ -235,20 +274,20 @@ class Main extends Component {
           }
           .info {
             display: flex;
-            flex-direction: column; 
+            flex-direction: column;
             align-items: center;
             margin-bottom: 20px;
             font-size: 1.4em;
           }
           .info span {
-            margin-bottom: 10px; 
+            margin-bottom: 10px;
           }
-          .username-input, .search {
+          .username-input, .search, .category-dropdown {
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
           }
-          .username-input input, .search input {
+          .username-input input, .search input, .category-dropdown select {
             margin-right: 10px;
             font-size: 1.1em;
             width: 250px;
@@ -270,7 +309,7 @@ class Main extends Component {
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            width: 422px; 
+            width: calc(50% - 15px);
             transition: box-shadow 0.3s ease;
           }
           .fund-card:hover {
@@ -389,3 +428,4 @@ class Main extends Component {
 }
 
 export default Main;
+
