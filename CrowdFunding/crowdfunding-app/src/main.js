@@ -10,12 +10,16 @@ class Main extends Component {
       newUsername: '',
       searchQuery: '',
       donationAmounts: {},
+      comment: '',
       showModal: false,
+      showDonationHistoryModal: false,
+      showCommentsModal: false, 
       activeFundId: null,
       errorMessage: '',
-      showDonationHistoryModal: false,
       donationHistory: [],
+      comments: [],
       selectedCategory: 'all',
+      sortOrder: 'desc', 
     };
   }
 
@@ -81,8 +85,12 @@ class Main extends Component {
     this.setState({ donationAmounts, errorMessage: '' });
   }
 
+  handleCommentChange = (event) => {
+    this.setState({ comment: event.target.value });
+  }
+
   handleDonate = () => {
-    const { activeFundId, donationAmounts } = this.state;
+    const { activeFundId, donationAmounts, comment } = this.state;
     const amount = parseFloat(donationAmounts[activeFundId]);
 
     if (amount <= 0) {
@@ -91,8 +99,8 @@ class Main extends Component {
     }
 
     const amountInWei = window.web3.utils.toWei(donationAmounts[activeFundId], 'ether');
-    this.props.donateFund(activeFundId, amountInWei);
-    this.setState({ showModal: false, activeFundId: null, errorMessage: '' });
+    this.props.donateFund(activeFundId, amountInWei, comment);
+    this.setState({ showModal: false, activeFundId: null, errorMessage: '', comment: '' });
   }
 
   handleShowModal = (fundId) => {
@@ -100,16 +108,43 @@ class Main extends Component {
   }
 
   handleCloseModal = () => {
-    this.setState({ showModal: false, activeFundId: null, errorMessage: '' });
+    this.setState({ showModal: false, activeFundId: null });
   }
 
   handleShowDonationHistory = async (fundId) => {
-    const donationHistory = await this.props.getDonationHistory(fundId);
-    this.setState({ showDonationHistoryModal: true, donationHistory, activeFundId: fundId });
-  }
-
+    try {
+      const donationHistory = await this.props.getDonationHistory(fundId);
+      this.setState({ showDonationHistoryModal: true, donationHistory, activeFundId: fundId });
+    } catch (error) {
+      console.error("Error fetching donation history:", error);
+    }
+  };
+  
   handleCloseDonationHistoryModal = () => {
     this.setState({ showDonationHistoryModal: false, activeFundId: null });
+  };
+
+  handleShowComments = async (fundId) => {
+    const comments = await this.props.getFundComments(fundId);
+    this.setState({ showCommentsModal: true, comments, activeFundId: fundId });
+  }
+
+  handleCloseCommentsModal = () => {
+    this.setState({ showCommentsModal: false, activeFundId: null });
+  }
+
+  handleSortOrderChange = (event) => {
+    this.setState({ sortOrder: event.target.value }, this.sortDonations);
+  }
+
+  sortDonations = () => {
+    const { donationHistory, sortOrder } = this.state;
+    const sortedHistory = [...donationHistory].sort((a, b) => {
+      const amountA = parseFloat(window.web3.utils.fromWei(a.amount, 'ether'));
+      const amountB = parseFloat(window.web3.utils.fromWei(b.amount, 'ether'));
+      return sortOrder === 'desc' ? amountB - amountA : amountA - amountB;
+    });
+    this.setState({ donationHistory: sortedHistory });
   }
 
   filterFunds() {
@@ -135,11 +170,11 @@ class Main extends Component {
           return donatedInEther === 0;
         });
         break;
-        case 'needs-momentum':
-          filteredFunds = filteredFunds.filter(fund => {
-            const goalInEther = parseFloat(window.web3.utils.fromWei(fund.goal.toString(), 'ether'));
-            const donatedInEther = parseFloat(window.web3.utils.fromWei(fund.donated.toString(), 'ether'));
-            return donatedInEther > 0 && (donatedInEther / goalInEther) <= 0.5;
+      case 'needs-momentum':
+        filteredFunds = filteredFunds.filter(fund => {
+          const goalInEther = parseFloat(window.web3.utils.fromWei(fund.goal.toString(), 'ether'));
+          const donatedInEther = parseFloat(window.web3.utils.fromWei(fund.donated.toString(), 'ether'));
+          return donatedInEther > 0 && (donatedInEther / goalInEther) <= 0.5;
         });
         break;
       default:
@@ -151,7 +186,7 @@ class Main extends Component {
 
   render() {
     const { account } = this.props;
-    const { showModal, activeFundId, donationAmounts, errorMessage, username, newUsername, searchQuery, showDonationHistoryModal, donationHistory, selectedCategory } = this.state;
+    const { showModal, showDonationHistoryModal, showCommentsModal, activeFundId, donationAmounts, errorMessage, username, newUsername, searchQuery, donationHistory, comments, selectedCategory } = this.state;
 
     const filteredFunds = this.filterFunds();
 
@@ -218,6 +253,7 @@ class Main extends Component {
                       : <p>Thank you</p>
                     }
                     <button className="btn donation-history-btn" onClick={() => this.handleShowDonationHistory(fund.fundId)}>Donation History</button>
+                    <button className="btn comments-btn" onClick={() => this.handleShowComments(fund.fundId)}>Words of support</button>
                   </div>
                 </div>
               )
@@ -235,26 +271,64 @@ class Main extends Component {
                 value={donationAmounts[activeFundId] || ''}
                 onChange={this.handleDonationChange}
               />
+              <textarea
+                placeholder="Leave a comment"
+                value={this.state.comment}
+                onChange={this.handleCommentChange}
+              />
               {errorMessage && <p className="error">{errorMessage}</p>}
               <button className="btn donate-btn" onClick={this.handleDonate}>Donate</button>
             </div>
           </div>
         )}
-        {showDonationHistoryModal && (
-          <div className="modal">
-            <div className="modal-content">
-              <span className="close" onClick={this.handleCloseDonationHistoryModal}>&times;</span>
-              <h2>Donation History</h2>
-              <ul className="donation-history">
-                {donationHistory.map((donation, index) => (
-                  <li key={index}>
-                    <span>{this.getOwnerName(donation.donor)}</span>: <span>{window.web3.utils.fromWei(donation.amount, 'ether')} ETH</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+        {
+  showDonationHistoryModal && (
+    <div className="modal">
+      <div className="modal-content">
+        <span className="close" onClick={this.handleCloseDonationHistoryModal}>&times;</span>
+        <h2>Donation History</h2>
+        <select onChange={this.handleSortOrderChange} value={this.state.sortOrder}>
+          <option value="desc">Highest to Lowest</option>
+          <option value="asc">Lowest to Highest</option>
+        </select>
+        <ul className="donation-history">
+          {donationHistory.map((donation, index) => (
+            <li key={index}>
+              <span>{this.getOwnerName(donation.donor)}</span>: <span>{window.web3.utils.fromWei(donation.amount, 'ether')} ETH</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+        {showCommentsModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={this.handleCloseCommentsModal}>&times;</span>
+            <h2>Words of Support</h2>
+            <ul className="comments">
+              {comments.map((comment, index) => (
+                <li key={index} className="comment-item">
+                  <div className="comment-header">
+                    <div className="comment-profile">
+                      <img src="/icon.png" alt="Profile Icon" className="profile-icon" />
+                      <div>
+                        <span className="comment-name">{this.getOwnerName(comment.donor)}</span>
+                        <div className="comment-meta">
+                          <span className="comment-amount">{window.web3.utils.fromWei(comment.amount, 'ether')} ETH</span>
+                          <span className="comment-text">{comment.comment}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
-        )}
+        </div>
+      )}
+
         <style jsx>{`
           body, html {
             height: 100%;
@@ -309,7 +383,7 @@ class Main extends Component {
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            width: calc(50% - 15px);
+            width: 590px;
             transition: box-shadow 0.3s ease;
           }
           .fund-card:hover {
@@ -376,6 +450,14 @@ class Main extends Component {
           .donation-history-btn:hover {
             background-color: #117a8b;
           }
+          .comments-btn {
+            background-color: #6c757d;
+            color: white;
+            margin-left: 10px;
+          }
+          .comments-btn:hover {
+            background-color: #5a6268;
+          }
           .modal {
             display: block;
             position: fixed;
@@ -393,10 +475,34 @@ class Main extends Component {
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
-            max-width: 500px;
+            max-width: 590px;
             text-align: center;
             border-radius: 8px;
             font-size: 1.2em;
+          }
+          .modal-content input[type="text"], .modal-content textarea {
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+          }
+
+          .modal-content .btn.donate-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+          }
+
+          .modal-content .btn.donate-btn:hover {
+            background-color: #218838;
           }
           .close {
             color: #aaa;
@@ -412,15 +518,67 @@ class Main extends Component {
           .error {
             color: red;
           }
-          .donation-history {
+          .donation-history, .comments {
             list-style: none;
             padding: 0;
             margin: 20px 0;
           }
-          .donation-history li {
+          .donation-history li, .comments li {
             margin-bottom: 10px;
+            font-size: 1.1em;
+          }
+          .comments {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+          }
+
+          .comment-item {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 15px 0;
+          }
+
+          .comment-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+          }
+
+          .comment-profile {
+            display: flex;
+            align-items: flex-start;
+          }
+
+          .profile-icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            display: inline-block;
+          }
+
+          .comment-name {
+            font-weight: bold;
+            margin-left: 0px;
+          }
+
+          .comment-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            color: #757575;
+            font-size: 0.9em;
+          }
+
+          .comment-amount {
+            margin-bottom: 5px;
+          }
+
+          .comment-text {
+            margin: 0;
             font-size: 1em;
           }
+
+
         `}</style>
       </div>
     );
@@ -428,4 +586,3 @@ class Main extends Component {
 }
 
 export default Main;
-

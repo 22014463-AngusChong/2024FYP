@@ -69,6 +69,7 @@ class App extends Component {
     this.addFunds = this.addFunds.bind(this);
     this.donateFund = this.donateFund.bind(this);
     this.getDonationHistory = this.getDonationHistory.bind(this);
+    this.getFundComments = this.getFundComments.bind(this);
   }
 
   async addFunds(name, picName, goal, donated, desc, navigate) {
@@ -83,19 +84,18 @@ class App extends Component {
     console.log(output);
     console.log(data);
 
-    
     const newCampaignId = await this.state.contractInfo.methods.getNoOfFunds().call();
-    const newCampaign = await this.state.contractInfo.methods.listOfFunds(newCampaignId).call(); 
+    const newCampaign = await this.state.contractInfo.methods.listOfFunds(newCampaignId).call();
     this.setState({
       listOfFunds: [...this.state.listOfFunds, newCampaign],
       fundsCount: newCampaignId
     });
 
-    navigate("/");  
+    navigate("/");
   }
 
-  async donateFund(id, amount) {
-    const output = await this.state.contractInfo.methods.donateFund(id).send({ from: this.state.account, value: amount })
+  async donateFund(id, amount, comment) {
+    const output = await this.state.contractInfo.methods.donateFund(id, comment).send({ from: this.state.account, value: amount })
       .once('receipt', (receipt) => {
         console.log(receipt);
       });
@@ -107,6 +107,12 @@ class App extends Component {
     const donations = await this.state.contractInfo.methods.getDonationHistory(id).call();
     console.log(donations);
     return donations;
+  }
+
+  async getFundComments(id) {
+    const comments = await this.state.contractInfo.methods.getFundComments(id).call();
+    console.log(comments);
+    return comments;
   }
 
   render() {
@@ -129,7 +135,8 @@ class App extends Component {
                   account={this.state.account}
                   listOfFunds={this.state.listOfFunds}
                   donateFund={this.donateFund}
-                  getDonationHistory={this.getDonationHistory} />} />
+                  getDonationHistory={this.getDonationHistory}
+                  getFundComments={this.getFundComments} />} />
 
                 <Route path="AddFunds" element={<AddFundsWrapper
                   fundsCount={this.state.fundsCount}

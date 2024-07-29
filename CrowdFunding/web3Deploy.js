@@ -1,11 +1,15 @@
-const { Web3 } = require("web3");
-
-// Loading the contract ABI and Bytecode (the results of a previous compilation step)
+const Web3 = require("web3");
 const fs = require("fs");
-const { abi, bytecode } = JSON.parse(fs.readFileSync("build/contracts/CrowdFunding.json"));
+const path = require("path");
+require("dotenv").config();
+
+// Load the ABI and Bytecode of the contract
+const { abi, bytecode } = JSON.parse(
+  fs.readFileSync(path.resolve(__dirname, "build/contracts/CrowdFunding.json"))
+);
 
 async function main() {
-  // Configuring the connection to an Ethereum node
+  // Setup web3 instance connected to Ethereum node
   const network = process.env.ETHEREUM_NETWORK;
   const web3 = new Web3(
     new Web3.providers.HttpProvider(
@@ -13,36 +17,30 @@ async function main() {
     )
   );
 
-  // Creating a signing account from a private key
+  // Create account from private key and add to wallet
   const signer = web3.eth.accounts.privateKeyToAccount(process.env.SIGNER_PRIVATE_KEY);
-
-  // Obtain the balance of the account
-  web3.eth.getBalance(process.env.SIGNER_PUBLIC_KEY, "latest", (err, wei) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    console.log(wei + " WEI");
-    const balanceE = web3.utils.fromWei(wei, "ether");
-    console.log(balanceE + " ETH");
-  });
   web3.eth.accounts.wallet.add(signer);
 
-  // Using the signing account to deploy the contract
+  // Check the signer's balance
+  const balanceWei = await web3.eth.getBalance(signer.address);
+  const balanceEth = web3.utils.fromWei(balanceWei, "ether");
+  console.log(`Signer balance: ${balanceEth} ETH`);
+
+  // Deploy the contract
   const contract = new web3.eth.Contract(abi);
   contract.options.data = bytecode;
   const deployTx = contract.deploy();
   const deployedContract = await deployTx
     .send({
       from: signer.address,
-      gas: await deployTx.estimateGas()
+      gas: await deployTx.estimateGas(),
     })
     .once("transactionHash", (txhash) => {
-      console.log(`Mining deployment transaction ...`);
+      console.log(`Mining deployment transaction...`);
       console.log(`https://${network}.etherscan.io/tx/${txhash}`);
     });
 
-  // The contract is now deployed on chain!
+  // Contract deployed!
   console.log(`Contract deployed at ${deployedContract.options.address}`);
 
   // Get the name of the crowdfunding campaign
@@ -64,48 +62,47 @@ async function main() {
   });
 
   // Add a new fund
-  deployedContract.methods
-    .addFunds(
-      "Medical Aid",
-      "medical_aid.jpg",
-      web3.utils.toWei("10", "ether"),
-      0,
-      "Fundraising for medical expenses"
-    )
-    .estimateGas({ from: process.env.SIGNER_PUBLIC_KEY })
-    .then(function (gasAmount) {
-      console.log("Estimated Gas Amount:", gasAmount);
+  try {
+    const gasEstimate = await deployedContract.methods
+      .addFunds(
+        "Medical Aid",
+        "medical_aid.jpg",
+        web3.utils.toWei("10", "ether"),
+        0,
+        "Fundraising for medical expenses"
+      )
+      .estimateGas({ from: signer.address });
 
-      deployedContract.methods
-        .addFunds(
-          "Medical Aid",
-          "medical_aid.jpg",
-          web3.utils.toWei("10", "ether"),
-          0,
-          "Fundraising for medical expenses"
-        )
-        .send({
-          from: process.env.SIGNER_PUBLIC_KEY,
-          gas: gasAmount
-        })
-        .then(function (receipt) {
-          console.log("Transaction Receipt:", receipt);
+    console.log("Estimated Gas Amount:", gasEstimate);
 
-          // Get the number of funds after adding a new one
-          deployedContract.methods.getNoOfFunds().call((err, result) => {
-            if (err) {
-              console.error(err);
-              return;
-            }
-            console.log("Number of Funds after adding a new one:", result);
-          });
-        });
-    })
-    .catch((err) => {
-      console.error(err);
+    const receipt = await deployedContract.methods
+      .addFunds(
+        "Medical Aid",
+        "medical_aid.jpg",
+        web3.utils.toWei("10", "ether"),
+        0,
+        "Fundraising for medical expenses"
+      )
+      .send({
+        from: signer.address,
+        gas: gasEstimate,
+      });
+
+    console.log("Transaction Receipt:", receipt);
+
+    // Get the number of funds after adding a new one
+    deployedContract.methods.getNoOfFunds().call((err, result) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      console.log("Number of Funds after adding a new one:", result);
     });
+  } catch (error) {
+    console.error("Error in adding funds:", error);
+  }
 }
 
-require("dotenv").config();
-main();
-
+main().catch((err) => {
+  console.error("Error in script execution:", err);
+});
