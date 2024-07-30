@@ -57,7 +57,6 @@ contract CrowdFunding {
     mapping(uint => Donation[]) public fundDonations;
     mapping(uint => Comment[]) public fundComments;
     mapping(address => uint) public userDonations;
-    
 
     event FundCreated(
         uint fundId,
@@ -112,7 +111,7 @@ contract CrowdFunding {
         return fundsCount;
     }
 
-    function donateFund(uint _id) public payable {
+    function donateFund(uint _id, string memory _comment) public payable {
         FundDetails storage fundsInfo = listOfFunds[_id];
         address payable seller = fundsInfo.ownerId;
         require(fundsInfo.fundId > 0 && fundsInfo.fundId <= fundsCount, "Invalid fund ID");
@@ -126,7 +125,15 @@ contract CrowdFunding {
             amount: msg.value
         }));
 
-        
+    
+        if (bytes(_comment).length > 0) {
+            fundComments[_id].push(Comment({
+                donor: msg.sender,
+                amount: msg.value,
+                comment: _comment
+            }));
+        }
+
         userDonations[msg.sender] += msg.value;
         seller.transfer(msg.value);
 

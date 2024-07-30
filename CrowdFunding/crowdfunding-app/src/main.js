@@ -19,7 +19,7 @@ class Main extends Component {
       donationHistory: [],
       comments: [],
       selectedCategory: 'all',
-      sortOrder: 'desc', 
+      sortOrder: 'desc', // 'desc' for highest to lowest, 'asc' for lowest to highest
     };
   }
 
@@ -119,7 +119,7 @@ class Main extends Component {
       console.error("Error fetching donation history:", error);
     }
   };
-  
+
   handleCloseDonationHistoryModal = () => {
     this.setState({ showDonationHistoryModal: false, activeFundId: null });
   };
@@ -282,26 +282,26 @@ class Main extends Component {
           </div>
         )}
         {
-  showDonationHistoryModal && (
-    <div className="modal">
-      <div className="modal-content">
-        <span className="close" onClick={this.handleCloseDonationHistoryModal}>&times;</span>
-        <h2>Donation History</h2>
-        <select onChange={this.handleSortOrderChange} value={this.state.sortOrder}>
-          <option value="desc">Highest to Lowest</option>
-          <option value="asc">Lowest to Highest</option>
-        </select>
-        <ul className="donation-history">
-          {donationHistory.map((donation, index) => (
-            <li key={index}>
-              <span>{this.getOwnerName(donation.donor)}</span>: <span>{window.web3.utils.fromWei(donation.amount, 'ether')} ETH</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  )
-}
+        showDonationHistoryModal && (
+          <div className="modal">
+            <div className="modal-content">
+              <span className="close" onClick={this.handleCloseDonationHistoryModal}>&times;</span>
+              <h2>Donation History</h2>
+              <select onChange={this.handleSortOrderChange} value={this.state.sortOrder}>
+                <option value="desc">Highest to Lowest</option>
+                <option value="asc">Lowest to Highest</option>
+              </select>
+              <ul className="donation-history">
+                {donationHistory.map((donation, index) => (
+                  <li key={index}>
+                    <span>{this.getOwnerName(donation.donor)}</span>: <span>{window.web3.utils.fromWei(donation.amount, 'ether')} ETH</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )
+      }
         {showCommentsModal && (
         <div className="modal">
           <div className="modal-content">
