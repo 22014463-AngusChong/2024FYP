@@ -70,6 +70,7 @@ class App extends Component {
     this.donateFund = this.donateFund.bind(this);
     this.getDonationHistory = this.getDonationHistory.bind(this);
     this.getFundComments = this.getFundComments.bind(this);
+    this.addMember = this.addMember.bind(this);
   }
 
   async addFunds(name, picName, goal, donated, desc, navigate) {
@@ -114,6 +115,13 @@ class App extends Component {
     console.log(comments);
     return comments;
   }
+  async addMember(address, name, rating) {
+    const output = await this.state.contractInfo.methods.addMember(address, name, rating).send({ from: this.state.account })
+      .once('receipt', (receipt) => {
+        console.log(receipt);
+      });
+    console.log(output);
+  }
 
   render() {
     return (
@@ -143,9 +151,10 @@ class App extends Component {
                   account={this.state.account}
                   addFunds={this.addFunds} />} />
 
-                <Route path="MemberClub" element={<MemberClub
+                < Route path="MemberClub" element={<MemberClub
                   account={this.state.account}
-                  contract={this.state.contractInfo} />} />
+                  contract={this.state.contractInfo}
+                  addMember={this.addMember} />} /> 
 
                 <Route path="Campaigns" element={<Campaigns
                   account={this.state.account}

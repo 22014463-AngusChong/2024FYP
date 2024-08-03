@@ -53,10 +53,17 @@ contract CrowdFunding {
         string comment;
     }
 
+    struct Member {
+        string name;
+        uint rating;
+    }
+
     mapping(uint => FundDetails) public listOfFunds;
     mapping(uint => Donation[]) public fundDonations;
     mapping(uint => Comment[]) public fundComments;
     mapping(address => uint) public userDonations;
+    mapping(address => Member) public members;
+    address[] public memberAddresses;
 
     event FundCreated(
         uint fundId,
@@ -80,6 +87,12 @@ contract CrowdFunding {
         FundingStatus status
     );
 
+    event MemberAdded(
+        address indexed memberAddress,
+        string name,
+        uint rating
+    );
+
     function addFunds(
         string memory _name,
         string memory _picName,
@@ -87,7 +100,7 @@ contract CrowdFunding {
         uint _donated,
         string memory _desc
     ) public {
-        incrementFundCount();
+        fundsCount += 1;
         uint256[] memory empDonations;
         listOfFunds[fundsCount] = FundDetails(
             fundsCount,
@@ -101,10 +114,6 @@ contract CrowdFunding {
             FundingStatus.Ongoing
         );
         emit FundCreated(fundsCount, _name, _picName, _goal, _donated, _desc, payable(msg.sender), FundingStatus.Ongoing);
-    }
-
-    function incrementFundCount() internal {
-        fundsCount += 1;
     }
 
     function getNoOfFunds() public view returns (uint) {
@@ -125,7 +134,6 @@ contract CrowdFunding {
             amount: msg.value
         }));
 
-    
         if (bytes(_comment).length > 0) {
             fundComments[_id].push(Comment({
                 donor: msg.sender,
@@ -154,7 +162,7 @@ contract CrowdFunding {
         return fundComments[_id];
     }
 
-    function getUserRating(address _user) public view returns (uint) {
+    function getMemberUserRating(address _user) public view returns (uint) {
         uint totalDonated = userDonations[_user];
 
         if (totalDonated >= 10 ether) return 5; // Platinum
@@ -173,5 +181,25 @@ contract CrowdFunding {
         if (percentage >= 50) return 3;
         if (percentage >= 25) return 2;
         return 1;
+    }
+
+    function addMember(address _address, string memory _name, uint _rating) public {
+        members[_address] = Member(_name, _rating);
+        memberAddresses.push(_address);
+        emit MemberAdded(_address, _name, _rating);
+    }
+
+    function getAllMemberAddresses() public view returns (address[] memory) {
+        return memberAddresses;
+    }
+
+    function getUserName(address _address) public view returns (string memory) {
+        require(bytes(members[_address].name).length != 0, "Member not found");
+        return members[_address].name;
+    }
+
+    function getUserRating(address _address) public view returns (uint) {
+        require(members[_address].rating != 0, "Member not found");
+        return members[_address].rating;
     }
 }

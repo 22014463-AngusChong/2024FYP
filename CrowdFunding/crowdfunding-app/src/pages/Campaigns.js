@@ -4,16 +4,29 @@ import './Campaigns.css';
 const Campaigns = () => {
   useEffect(() => {
     // Initial Ratings
-    const ratings = {
-      breastcancer: 4.7,
-      adoption: 3.5,
-      africa: 4.3,
-      childreneducation: 4.8,
-      homeless: 4.2
+    let ratings = {
+      breastcancer: 0,
+      adoption: 0,
+      africa: 0,
+      childreneducation: 0,
+      homeless: 0
     };
 
     // Total Stars
     const starsTotal = 5;
+
+    // Load ratings from localStorage
+    const loadRatings = () => {
+      const savedRatings = localStorage.getItem('ratings');
+      if (savedRatings) {
+        ratings = JSON.parse(savedRatings);
+      }
+    };
+
+    // Save ratings to localStorage
+    const saveRatings = () => {
+      localStorage.setItem('ratings', JSON.stringify(ratings));
+    };
 
     // Get ratings
     function getRatings() {
@@ -44,8 +57,9 @@ const Campaigns = () => {
       }
     }
 
-    // Run getRatings when DOM loads
-    document.addEventListener('DOMContentLoaded', getRatings);
+    // Load ratings from localStorage when DOM loads
+    loadRatings();
+    getRatings();
 
     // Form Elements
     const campaignSelect = document.getElementById('campaign-select');
@@ -79,12 +93,10 @@ const Campaigns = () => {
 
         // Change rating
         ratings[campaign] = rating;
-
+        saveRatings();
         getRatings();
       });
     }
-
-    getRatings();
   }, []);
 
   return (
